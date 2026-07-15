@@ -57,8 +57,49 @@ export default function ChatBot() {
           </div>
         </div>
       )}
+      {!isOpen && (
+        <div className="avatar-hello-bubble">
+          Hello! 👋
+        </div>
+      )}
       <button className={`chat-fab ${isOpen ? 'active' : ''}`} onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close assistant' : 'Open AI assistant'}>
-        {isOpen ? '✕' : <Icon name="fifaAi" width="24" height="24" style={{ color: 'white' }} />}
+        {isOpen ? '✕' : (
+          <svg className="cute-avatar-svg" viewBox="0 0 40 40" width="38" height="38" style={{ overflow: 'visible' }}>
+            {/* Glow */}
+            <circle cx="20" cy="20" r="16" fill="rgba(0, 242, 254, 0.15)" filter="blur(2px)" />
+            {/* Body */}
+            <path d="M12 32 C12 25, 28 25, 28 32 Z" fill="url(#avatar-body-grad)" stroke="#00f2fe" strokeWidth="1.5" />
+            {/* Head */}
+            <rect x="10" y="12" width="20" height="15" rx="7.5" fill="url(#avatar-head-grad)" stroke="#00f2fe" strokeWidth="1.5" />
+            {/* Antenna */}
+            <line x1="20" y1="12" x2="20" y2="7" stroke="#00f2fe" strokeWidth="2" strokeLinecap="round" />
+            <circle cx="20" cy="6" r="2.5" fill="#00f2fe" className="avatar-antenna-pulse" />
+            {/* Blinking Eyes */}
+            <circle cx="16" cy="19" r="2" fill="#05f7ff" className="avatar-eye" />
+            <circle cx="24" cy="19" r="2" fill="#05f7ff" className="avatar-eye" />
+            {/* Cheeks */}
+            <circle cx="14" cy="22" r="1.2" fill="#ff4b91" opacity="0.6" />
+            <circle cx="26" cy="22" r="1.2" fill="#ff4b91" opacity="0.6" />
+            {/* Mouth */}
+            <path d="M18 22 Q20 24, 22 22" stroke="#05f7ff" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+            {/* Waving arm */}
+            <g className="cute-avatar-hand">
+              <path d="M30 20 Q35 15, 34 8" stroke="#00f2fe" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+              <circle cx="34" cy="8" r="3" fill="#05f7ff" />
+              <path d="M37 5 L39 3 M38 8 L41 8" stroke="#05f7ff" strokeWidth="1" strokeLinecap="round" />
+            </g>
+            <defs>
+              <linearGradient id="avatar-head-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#0a1931" />
+                <stop offset="100%" stopColor="#15305b" />
+              </linearGradient>
+              <linearGradient id="avatar-body-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#15305b" />
+                <stop offset="100%" stopColor="#0a1931" />
+              </linearGradient>
+            </defs>
+          </svg>
+        )}
       </button>
     </>
   );
