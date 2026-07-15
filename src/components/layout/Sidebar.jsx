@@ -35,17 +35,19 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    if (mouseY === Infinity || !ref.current) {
+    if (mouseY === Infinity || !ref.current || !ref.current.parentElement) {
       setScale(1);
       return;
     }
 
     const el = ref.current;
-    const rect = el.getBoundingClientRect();
-    const itemCenterY = rect.top + rect.height / 2;
+    const parentEl = el.parentElement;
+    
+    // Calculate static vertical center using the non-scaled wrapper div's offsets
+    const itemCenterY = parentEl.offsetTop + parentEl.offsetHeight / 2;
 
     const distance = Math.abs(mouseY - itemCenterY);
-    const maxDistance = 140; // slightly wider range of influence for smoothness
+    const maxDistance = 140; // range of influence
 
     if (distance < maxDistance) {
       const factor = 1 - distance / maxDistance; // 0 to 1
@@ -117,7 +119,9 @@ export default function Sidebar({ collapsed, onToggle, alertCount = 0 }) {
   const [mouseY, setMouseY] = useState(Infinity);
 
   const handleMouseMove = (e) => {
-    setMouseY(e.clientY);
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMouseY(e.clientY - rect.top + containerRef.current.scrollTop);
   };
 
   const handleMouseLeave = () => {
