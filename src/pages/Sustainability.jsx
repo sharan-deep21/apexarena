@@ -59,17 +59,17 @@ export default function Sustainability() {
         <InteractiveCard className="metric-ring-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-5)' }}>
           <ProgressRing value={Math.min(m.carbonReduction, 100)} color="var(--accent-success)" />
           <div className="metric-ring-label" style={{ fontWeight: 600, marginTop: 'var(--space-3)' }}>Carbon Reduction</div>
-          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>{m.carbonTons} tons CO₂ offset today</div>
+          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}><GooeyValue value={m.carbonTons} /> tons CO₂ offset today</div>
         </InteractiveCard>
         <InteractiveCard className="metric-ring-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-5)' }}>
           <ProgressRing value={m.recyclingRate} color="var(--accent-info)" />
           <div className="metric-ring-label" style={{ fontWeight: 600, marginTop: 'var(--space-3)' }}>Recycling Rate</div>
-          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>{m.recyclingRate}% of waste recycled</div>
+          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}><GooeyValue value={m.recyclingRate} />% of waste recycled</div>
         </InteractiveCard>
         <InteractiveCard className="metric-ring-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-5)' }}>
           <ProgressRing value={m.waterEfficiency} color="var(--accent-primary)" />
           <div className="metric-ring-label" style={{ fontWeight: 600, marginTop: 'var(--space-3)' }}>Water Efficiency</div>
-          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>{m.waterSaved.toLocaleString()} gal saved</div>
+          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}><GooeyValue value={m.waterSaved.toLocaleString()} /> gal saved</div>
         </InteractiveCard>
       </div>
 

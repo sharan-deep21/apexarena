@@ -33,14 +33,14 @@ export default function GooeyValue({ value, morphTime = 0.5, className = "", tex
       }
 
       if (text1Ref.current && text2Ref.current) {
-        // Next text blurs in and fades in
+        // Next text blurs in and fades in - cap blur at 12px to prevent GPU glitches
         const nextFraction = fraction;
-        text2Ref.current.style.filter = `blur(${Math.min(8 / nextFraction - 8, 100)}px)`;
+        text2Ref.current.style.filter = `blur(${Math.min(8 / nextFraction - 8, 12)}px)`;
         text2Ref.current.style.opacity = String(Math.pow(nextFraction, 0.4));
 
-        // Current text blurs out and fades out
+        // Current text blurs out and fades out - cap blur at 12px to prevent GPU glitches
         const currFraction = 1 - fraction;
-        text1Ref.current.style.filter = `blur(${Math.min(8 / currFraction - 8, 100)}px)`;
+        text1Ref.current.style.filter = `blur(${Math.min(8 / currFraction - 8, 12)}px)`;
         text1Ref.current.style.opacity = String(Math.pow(currFraction, 0.4));
       }
 
