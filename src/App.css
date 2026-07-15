@@ -693,9 +693,9 @@ body {
 
 /* Hello Speech Bubble Above FAB */
 .avatar-hello-bubble {
-  position: absolute;
+  position: fixed;
   bottom: 80px;
-  right: 16px;
+  right: 24px;
   background: var(--glass-card-bg);
   border: 1px solid rgba(0, 242, 254, 0.3);
   backdrop-filter: blur(12px);
@@ -709,7 +709,14 @@ body {
   pointer-events: none;
   white-space: nowrap;
   z-index: 1000;
+  transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
   animation: bubbleFloat 2.5s ease-in-out infinite, bubbleFadeIn 0.3s ease-out forwards;
+}
+
+.avatar-hello-bubble.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.8);
 }
 
 .avatar-hello-bubble::after {
