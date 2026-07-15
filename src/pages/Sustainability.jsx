@@ -4,6 +4,7 @@ import ProgressRing from '../components/common/ProgressRing';
 import AnimatedCounter from '../components/common/AnimatedCounter';
 import { getSustainabilityTips } from '../services/geminiService';
 import Icon from '../components/common/Icon';
+import InteractiveCard from '../components/common/InteractiveCard';
 
 const STATIC_TIPS = [
   { tip: 'Reduce lighting in Sections 100-110 by 20% — natural sunlight is sufficient.', impact: 'Save ~45 kWh/hr', iconName: 'sun' },
@@ -54,27 +55,27 @@ export default function Sustainability() {
         </span>
       </div>
 
-      <div className="sustainability-grid">
-        <div className="metric-ring-card">
+      <div className="sustainability-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-4)' }}>
+        <InteractiveCard className="metric-ring-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-5)' }}>
           <ProgressRing value={Math.min(m.carbonReduction, 100)} color="var(--accent-success)" />
-          <div className="metric-ring-label">Carbon Reduction</div>
-          <div className="metric-ring-sub">{m.carbonTons} tons CO₂ offset today</div>
-        </div>
-        <div className="metric-ring-card">
+          <div className="metric-ring-label" style={{ fontWeight: 600, marginTop: 'var(--space-3)' }}>Carbon Reduction</div>
+          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>{m.carbonTons} tons CO₂ offset today</div>
+        </InteractiveCard>
+        <InteractiveCard className="metric-ring-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-5)' }}>
           <ProgressRing value={m.recyclingRate} color="var(--accent-info)" />
-          <div className="metric-ring-label">Recycling Rate</div>
-          <div className="metric-ring-sub">{m.recyclingRate}% of waste recycled</div>
-        </div>
-        <div className="metric-ring-card">
+          <div className="metric-ring-label" style={{ fontWeight: 600, marginTop: 'var(--space-3)' }}>Recycling Rate</div>
+          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>{m.recyclingRate}% of waste recycled</div>
+        </InteractiveCard>
+        <InteractiveCard className="metric-ring-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-5)' }}>
           <ProgressRing value={m.waterEfficiency} color="var(--accent-primary)" />
-          <div className="metric-ring-label">Water Efficiency</div>
-          <div className="metric-ring-sub">{m.waterSaved.toLocaleString()} gal saved</div>
-        </div>
+          <div className="metric-ring-label" style={{ fontWeight: 600, marginTop: 'var(--space-3)' }}>Water Efficiency</div>
+          <div className="metric-ring-sub" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>{m.waterSaved.toLocaleString()} gal saved</div>
+        </InteractiveCard>
       </div>
 
       <div className="dashboard-grid" style={{ marginTop: 'var(--space-4)' }}>
         {/* Waste Management */}
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="sustainability" style={{ color: 'var(--accent-success)' }} /> Waste Management
@@ -100,10 +101,10 @@ export default function Sustainability() {
               </div>
             ))}
           </div>
-        </div>
+        </InteractiveCard>
 
         {/* Energy Consumption */}
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="bolt" style={{ color: 'var(--accent-warning)' }} /> Energy Consumption
@@ -136,11 +137,11 @@ export default function Sustainability() {
               </div>
             ))}
           </div>
-        </div>
+        </InteractiveCard>
       </div>
 
       {/* AI Recommendations Panel */}
-      <div className="card" style={{ marginTop: 'var(--space-4)' }}>
+      <InteractiveCard style={{ marginTop: 'var(--space-4)' }}>
         <div className="card-header">
           <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Icon name="fifaAi" style={{ color: 'var(--accent-gold)' }} /> AI Eco-Recommendations
@@ -180,7 +181,7 @@ export default function Sustainability() {
             </div>
           )}
         </div>
-      </div>
+      </InteractiveCard>
     </div>
   );
 }

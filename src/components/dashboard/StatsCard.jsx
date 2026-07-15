@@ -1,12 +1,18 @@
 import AnimatedCounter from '../common/AnimatedCounter';
 import Icon from '../common/Icon';
+import InteractiveCard from '../common/InteractiveCard';
 
 export default function StatsCard({ label, value, iconName, trend, colorClass = 'blue', delay = 0 }) {
   const trendClass = trend?.direction === 'up' ? 'up' : trend?.direction === 'down' ? 'down' : 'neutral';
   const trendArrow = trend?.direction === 'up' ? '↑' : trend?.direction === 'down' ? '↓' : '→';
   const sparkPoints = Array.from({ length: 8 }, (_, i) => `${(i / 7) * 100},${50 + (Math.sin(i + Date.now() / 1000) * 20)}`).join(' ');
+
   return (
-    <div className="stats-card" style={{ animationDelay: `${delay}ms` }}>
+    <InteractiveCard 
+      className="stats-card" 
+      style={{ animationDelay: `${delay}ms` }}
+      tiltEnabled={true}
+    >
       <div className="stats-card-header">
         <span className="stats-card-label">{label}</span>
         <div className={`stats-card-icon ${colorClass}`}>
@@ -22,6 +28,6 @@ export default function StatsCard({ label, value, iconName, trend, colorClass = 
           <polyline points={sparkPoints} fill="none" stroke="currentColor" strokeWidth="2" opacity="0.5" />
         </svg>
       </div>
-    </div>
+    </InteractiveCard>
   );
 }

@@ -306,5 +306,96 @@ body {
   background: linear-gradient(180deg, var(--sidebar-link-active), var(--accent-primary)) !important;
 }
 
+/* ── Premium Interactive Cards and Button Shimmers ── */
+.interactive-card {
+  transition: transform 0.08s ease-out, box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+.interactive-card:hover {
+  border-color: rgba(0, 242, 254, 0.45) !important;
+  box-shadow: 0 20px 45px rgba(0, 242, 254, 0.12), 0 0 25px rgba(212, 175, 55, 0.08) !important;
+}
+
+/* Page load transition fadeInUp slide-up */
+.page {
+  animation: pageFadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+@keyframes pageFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Premium edge-glowing buttons with laser hover shimmer */
+.btn-glow {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(11, 19, 43, 0.6) !important;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    transparent 0deg,
+    #00f2fe 120deg,
+    #d4af37 240deg,
+    transparent 360deg
+  );
+  animation: btnBorderRotate 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -2;
+}
+
+.btn-glow::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: var(--accent-primary);
+  border-radius: inherit;
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+
+.btn-glow:hover {
+  transform: scale(1.03) translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 242, 254, 0.25), 0 0 15px rgba(212, 175, 55, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.btn-glow:hover::before {
+  opacity: 1;
+}
+
+.btn-glow:hover::after {
+  background: rgba(11, 19, 43, 0.85); /* Creates the "inner cutout" look so only a laser border glows! */
+}
+
+@keyframes btnBorderRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 
 

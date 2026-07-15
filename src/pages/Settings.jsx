@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { getApiKey, setApiKey } from '../services/geminiService';
 import { LANGUAGES, getCurrentLanguage, setCurrentLanguage } from '../services/i18nService';
 import { VENUES, getCurrentVenueId, setCurrentVenueId } from '../data/venues';
+import Icon from '../components/common/Icon';
+import InteractiveCard from '../components/common/InteractiveCard';
 
 export default function Settings() {
   const [apiKey, setApiKeyState] = useState('');
@@ -36,10 +38,10 @@ export default function Settings() {
   };
 
   const tabs = [
-    { id: 'general', label: 'General Settings', icon: '⚙️' },
-    { id: 'api', label: 'API Configuration', icon: '🔑' },
-    { id: 'notifications', label: 'Notifications', icon: '🔔' },
-    { id: 'language', label: 'Language', icon: '🌐' }
+    { id: 'general', label: 'General Settings', iconName: 'settings' },
+    { id: 'api', label: 'API Configuration', iconName: 'lock' },
+    { id: 'notifications', label: 'Notifications', iconName: 'bell' },
+    { id: 'language', label: 'Language', iconName: 'sustainability' }
   ];
 
   return (
@@ -49,7 +51,7 @@ export default function Settings() {
           <h2 className="page-title">Settings</h2>
           <p className="page-subtitle">Configure your StadiumAI experience</p>
         </div>
-        <button className="btn btn-primary" onClick={handleSave}>
+        <button className="btn btn-primary btn-glow" onClick={handleSave}>
           {saved ? '✓ Saved!' : 'Save Changes'}
         </button>
       </div>
@@ -61,18 +63,20 @@ export default function Settings() {
               key={tab.id}
               className={`settings-nav-item ${activeTab === tab.id ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              <span style={{ marginRight: '8px' }}>{tab.icon}</span>
-              {tab.label}
+              <Icon name={tab.iconName} width="16" height="16" />
+              <span>{tab.label}</span>
             </div>
           ))}
         </div>
 
-        <div className="settings-section">
+        <InteractiveCard className="settings-section" style={{ minHeight: '300px' }}>
           {activeTab === 'general' && (
             <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
-              <div className="settings-section-title">⚙️ General Settings</div>
+              <div className="settings-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: 'var(--text-lg)', marginBottom: 'var(--space-4)' }}>
+                <Icon name="settings" style={{ color: 'var(--accent-primary-light)' }} /> General Settings
+              </div>
               <div className="settings-field">
                 <label className="settings-label">Active Venue</label>
                 <select className="settings-select" value={venue} onChange={e => setVenue(e.target.value)}>
@@ -91,7 +95,9 @@ export default function Settings() {
 
           {activeTab === 'api' && (
             <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
-              <div className="settings-section-title">🔑 API Configuration</div>
+              <div className="settings-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: 'var(--text-lg)', marginBottom: 'var(--space-4)' }}>
+                <Icon name="lock" style={{ color: 'var(--accent-warning)' }} /> API Configuration
+              </div>
               <div className="settings-field">
                 <label className="settings-label">Google Gemini API Key</label>
                 <input
@@ -111,9 +117,11 @@ export default function Settings() {
 
           {activeTab === 'notifications' && (
             <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
-              <div className="settings-section-title">🔔 Notifications</div>
+              <div className="settings-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: 'var(--text-lg)', marginBottom: 'var(--space-4)' }}>
+                <Icon name="bell" style={{ color: 'var(--accent-danger)' }} /> Notifications
+              </div>
               {Object.entries({ alerts: 'Critical Alerts', crowd: 'Crowd Warnings', emergency: 'Emergency Broadcasts' }).map(([k, l]) => (
-                <div key={k} className="settings-toggle">
+                <div key={k} className="settings-toggle" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border-color)' }}>
                   <span style={{ fontSize: 'var(--text-sm)' }}>{l}</span>
                   <div
                     className={`toggle-switch ${notifications[k] ? 'active' : ''}`}
@@ -126,7 +134,9 @@ export default function Settings() {
 
           {activeTab === 'language' && (
             <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
-              <div className="settings-section-title">🌐 Language Preference</div>
+              <div className="settings-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: 'var(--text-lg)', marginBottom: 'var(--space-4)' }}>
+                <Icon name="sustainability" style={{ color: 'var(--accent-success)' }} /> Language Preference
+              </div>
               <div className="settings-field">
                 <select className="settings-select" value={language} onChange={e => setLanguage(e.target.value)}>
                   {LANGUAGES.map(l => (
@@ -138,7 +148,7 @@ export default function Settings() {
               </div>
             </div>
           )}
-        </div>
+        </InteractiveCard>
       </div>
     </div>
   );

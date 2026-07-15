@@ -5,6 +5,7 @@ import StatusBadge from '../components/common/StatusBadge';
 import AnimatedCounter from '../components/common/AnimatedCounter';
 import CrowdHeatmap from '../components/dashboard/CrowdHeatmap';
 import Icon from '../components/common/Icon';
+import InteractiveCard from '../components/common/InteractiveCard';
 
 export default function CrowdManagement() {
   const data = useRealTimeData();
@@ -25,28 +26,14 @@ export default function CrowdManagement() {
       </div>
 
       <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-        <div className="stats-card">
-          <div className="stats-card-label">Total in Venue</div>
-          <div className="stats-card-value"><AnimatedCounter value={crowdAnalytics.totalCurrent} /></div>
-        </div>
-        <div className="stats-card">
-          <div className="stats-card-label">Total Capacity</div>
-          <div className="stats-card-value"><AnimatedCounter value={crowdAnalytics.totalCapacity} /></div>
-        </div>
-        <div className="stats-card">
-          <div className="stats-card-label">Avg Density</div>
-          <div className="stats-card-value">{formatPercent(crowdAnalytics.avgDensity)}</div>
-        </div>
-        <div className="stats-card">
-          <div className="stats-card-label">Critical Zones</div>
-          <div className="stats-card-value" style={{ color: crowdAnalytics.criticalZones.length > 0 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>
-            {crowdAnalytics.criticalZones.length}
-          </div>
-        </div>
+        <StatsCard label="Total in Venue" value={crowdAnalytics.totalCurrent} iconName="crowd" colorClass="blue" delay={0} />
+        <StatsCard label="Total Capacity" value={crowdAnalytics.totalCapacity} iconName="dashboard" colorClass="green" delay={80} />
+        <StatsCard label="Avg Density" value={formatPercent(crowdAnalytics.avgDensity)} iconName="settings" colorClass="amber" delay={160} />
+        <StatsCard label="Critical Zones" value={crowdAnalytics.criticalZones.length} iconName="alertTriangle" colorClass="red" delay={240} />
       </div>
 
       <div className="dashboard-grid">
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="navigation" style={{ color: 'var(--accent-primary-light)' }} /> Live Density Map
@@ -55,9 +42,9 @@ export default function CrowdManagement() {
           <div className="card-body">
             <CrowdHeatmap crowdData={crowdData} />
           </div>
-        </div>
+        </InteractiveCard>
 
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="alertTriangle" style={{ color: 'var(--accent-danger)' }} /> Active Alerts
@@ -88,7 +75,7 @@ export default function CrowdManagement() {
               ))}
             </div>
           </div>
-        </div>
+        </InteractiveCard>
       </div>
 
       <div style={{ marginTop: 'var(--space-4)' }}>
@@ -98,23 +85,23 @@ export default function CrowdManagement() {
             const pct = z.capacity > 0 ? (z.current / z.capacity) * 100 : 0;
             const level = getCapacityLevel(pct);
             return (
-              <div key={z.name} className={`zone-card ${level}`}>
-                <div className="zone-card-name">{z.name}</div>
-                <div className="zone-card-capacity">{formatPercent(pct)}</div>
-                <div className="zone-card-label">{formatNumber(z.current)} / {formatNumber(z.capacity)}</div>
+              <InteractiveCard key={z.name} className={`zone-card ${level}`} style={{ padding: 'var(--space-4)' }}>
+                <div className="zone-card-name" style={{ fontWeight: 600 }}>{z.name}</div>
+                <div className="zone-card-capacity" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, margin: 'var(--space-1) 0' }}>{formatPercent(pct)}</div>
+                <div className="zone-card-label" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginBottom: 'var(--space-2)' }}>{formatNumber(z.current)} / {formatNumber(z.capacity)}</div>
                 <div className="progress-bar">
                   <div className={`progress-bar-fill ${pct >= 90 ? 'red' : pct >= 75 ? 'yellow' : 'green'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
                 </div>
                 <div style={{ marginTop: 'var(--space-2)', fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
                   Trend: {z.trend === 'up' ? '↑ Rising' : z.trend === 'down' ? '↓ Falling' : '→ Stable'}
                 </div>
-              </div>
+              </InteractiveCard>
             );
           })}
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 'var(--space-4)' }}>
+      <InteractiveCard style={{ marginTop: 'var(--space-4)' }}>
         <div className="card-header">
           <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Icon name="fifaAi" style={{ color: 'var(--accent-gold)' }} /> AI Crowd Insights
@@ -134,7 +121,24 @@ export default function CrowdManagement() {
             </p>
           </div>
         </div>
-      </div>
+      </InteractiveCard>
     </div>
+  );
+}
+
+// Stats Card wrapper to fix compilation since we upgraded StatsCard component.
+function StatsCard({ label, value, iconName, colorClass, delay }) {
+  return (
+    <InteractiveCard className="stats-card" style={{ animationDelay: `${delay}ms` }}>
+      <div className="stats-card-header">
+        <span className="stats-card-label">{label}</span>
+        <div className={`stats-card-icon ${colorClass}`}>
+          <Icon name={iconName} />
+        </div>
+      </div>
+      <div className="stats-card-value">
+        {typeof value === 'number' ? <AnimatedCounter value={value} /> : value}
+      </div>
+    </InteractiveCard>
   );
 }

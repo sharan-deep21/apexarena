@@ -3,6 +3,7 @@ import { useRealTimeData } from '../hooks/useRealTimeData';
 import { EVACUATION_ROUTES } from '../data/stadiumLayout';
 import { getEmergencyAdvice } from '../services/geminiService';
 import Icon from '../components/common/Icon';
+import InteractiveCard from '../components/common/InteractiveCard';
 
 const ACTIONS = [
   { iconName: 'emergency', label: 'Evacuate', desc: 'Full stadium evacuation', severity: 'critical', status: 'emergency-active' },
@@ -118,16 +119,17 @@ export default function Emergency() {
         Emergency Protocols
       </h3>
       
-      <div className="emergency-actions">
+      <div className="emergency-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
         {ACTIONS.map(a => (
-          <button
+          <InteractiveCard
             key={a.label}
-            className="emergency-action-btn"
             onClick={() => handleProtocolClick(a)}
             style={{
               borderColor: activeProtocol?.label === a.label ? 'var(--accent-danger)' : 'var(--border-color)',
-              background: activeProtocol?.label === a.label ? 'rgba(239, 68, 68, 0.15)' : 'var(--bg-secondary)',
-              transition: 'all 0.2s ease-in-out'
+              background: activeProtocol?.label === a.label ? 'rgba(239, 68, 68, 0.15)' : 'var(--glass-card-bg)',
+              cursor: 'pointer',
+              padding: 'var(--space-4)',
+              textAlign: 'center'
             }}
           >
             <span className="icon" style={{ 
@@ -140,13 +142,13 @@ export default function Emergency() {
             </span>
             <span style={{ fontWeight: 600, display: 'block', fontSize: 'var(--text-sm)' }}>{a.label}</span>
             <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>{a.desc}</span>
-          </button>
+          </InteractiveCard>
         ))}
       </div>
 
       <div className="dashboard-grid" style={{ marginTop: 'var(--space-6)' }}>
         {/* Incident Log */}
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="log" style={{ color: 'var(--accent-primary-light)' }} /> Incident Log
@@ -178,10 +180,10 @@ export default function Emergency() {
               ))}
             </div>
           </div>
-        </div>
+        </InteractiveCard>
 
         {/* Evacuation Routes */}
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="road" style={{ color: 'var(--accent-success)' }} /> Evacuation Routes
@@ -198,11 +200,11 @@ export default function Emergency() {
               </div>
             ))}
           </div>
-        </div>
+        </InteractiveCard>
       </div>
 
       {/* AI Decision Support */}
-      <div className="card" style={{ marginTop: 'var(--space-4)' }}>
+      <InteractiveCard style={{ marginTop: 'var(--space-4)' }}>
         <div className="card-header">
           <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Icon name="dashboard" style={{ color: 'var(--accent-info)' }} /> AI Emergency Decision Support
@@ -220,7 +222,7 @@ export default function Emergency() {
               </div>
             ) : aiAdvice ? (
               <div style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
-                📊 <strong>AI Decision Strategy:</strong><br />
+                <strong>AI Decision Strategy:</strong><br />
                 {aiAdvice}
               </div>
             ) : (
@@ -230,7 +232,7 @@ export default function Emergency() {
             )}
           </div>
         </div>
-      </div>
+      </InteractiveCard>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRealTimeData } from '../hooks/useRealTimeData';
 import Icon from '../components/common/Icon';
+import InteractiveCard from '../components/common/InteractiveCard';
 
 export default function Transport() {
   const data = useRealTimeData();
@@ -58,18 +59,18 @@ export default function Transport() {
 
       <div className="transport-grid">
         {/* Parking Lot Status */}
-        <div className="transport-card">
-          <div className="transport-card-header">
-            <span className="transport-card-icon" style={{ color: 'var(--accent-success)' }}>
+        <InteractiveCard className="transport-card" style={{ padding: 'var(--space-5)' }}>
+          <div className="transport-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span className="transport-card-icon" style={{ color: 'var(--accent-success)', display: 'inline-flex' }}>
               <Icon name="transport" />
             </span>
-            <span className="transport-card-title">Parking Lot Capacity</span>
+            <span className="transport-card-title" style={{ fontWeight: 600, fontSize: 'var(--text-md)' }}>Parking Lot Capacity</span>
           </div>
           {t.parking.map(l => (
             <div key={l.name} style={{ marginBottom: '12px' }}>
-              <div className="transport-stat" style={{ marginBottom: '4px' }}>
-                <span className="transport-stat-label" style={{ fontWeight: 600 }}>{l.name}</span>
-                <span className="transport-stat-value" style={{ color: l.available < 200 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>
+              <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                <span className="transport-stat-label" style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{l.name}</span>
+                <span className="transport-stat-value" style={{ fontSize: 'var(--text-sm)', color: l.available < 200 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>
                   {l.available} / {l.total} Left
                 </span>
               </div>
@@ -81,50 +82,62 @@ export default function Transport() {
               </div>
             </div>
           ))}
-        </div>
+        </InteractiveCard>
 
         {/* Public Transit */}
-        <div className="transport-card">
-          <div className="transport-card-header">
-            <span className="transport-card-icon" style={{ color: 'var(--accent-primary-light)' }}>
+        <InteractiveCard className="transport-card" style={{ padding: 'var(--space-5)' }}>
+          <div className="transport-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span className="transport-card-icon" style={{ color: 'var(--accent-primary-light)', display: 'inline-flex' }}>
               <Icon name="bus" />
             </span>
-            <span className="transport-card-title">Transit Status</span>
+            <span className="transport-card-title" style={{ fontWeight: 600, fontSize: 'var(--text-md)' }}>Transit Status</span>
           </div>
           {t.transit.map(r => (
-            <div key={r.name} className="transport-stat" style={{ padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
+            <div key={r.name} className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
               <div>
-                <span className="transport-stat-label" style={{ fontWeight: 600 }}>{r.name}</span>
+                <span className="transport-stat-label" style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{r.name}</span>
                 <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>To: {r.destination}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span className="transport-stat-value" style={{ fontWeight: 'bold' }}>{r.nextArrival}</span>
+                <span className="transport-stat-value" style={{ fontWeight: 'bold', fontSize: 'var(--text-sm)' }}>{r.nextArrival}</span>
                 <div style={{ fontSize: 'var(--text-xs)', color: r.status === 'On Time' ? 'var(--accent-success)' : 'var(--accent-danger)' }}>
                   {r.status}
                 </div>
               </div>
             </div>
           ))}
-        </div>
+        </InteractiveCard>
 
         {/* Ride Share */}
-        <div className="transport-card">
-          <div className="transport-card-header">
-            <span className="transport-card-icon" style={{ color: 'var(--accent-info)' }}>
+        <InteractiveCard className="transport-card" style={{ padding: 'var(--space-5)' }}>
+          <div className="transport-card-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span className="transport-card-icon" style={{ color: 'var(--accent-info)', display: 'inline-flex' }}>
               <Icon name="car" />
             </span>
-            <span className="transport-card-title">Ride Share Telemetry</span>
+            <span className="transport-card-title" style={{ fontWeight: 600, fontSize: 'var(--text-md)' }}>Ride Share Telemetry</span>
           </div>
-          <div className="transport-stat"><span className="transport-stat-label">Avg Pickup Wait</span><span className="transport-stat-value">{t.rideshare.avgWait}</span></div>
-          <div className="transport-stat"><span className="transport-stat-label">Surge Multiplier</span><span className="transport-stat-value" style={{ color: t.rideshare.surgeMultiplier > 1.5 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>{t.rideshare.surgeMultiplier}x</span></div>
-          <div className="transport-stat"><span className="transport-stat-label">Active Drivers Nearby</span><span className="transport-stat-value">{t.rideshare.activeDrivers}</span></div>
-          <div className="transport-stat"><span className="transport-stat-label">Designated Area</span><span className="transport-stat-value">{t.rideshare.pickupZone}</span></div>
-        </div>
+          <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
+            <span className="transport-stat-label">Avg Pickup Wait</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600 }}>{t.rideshare.avgWait}</span>
+          </div>
+          <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
+            <span className="transport-stat-label">Surge Multiplier</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600, color: t.rideshare.surgeMultiplier > 1.5 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>{t.rideshare.surgeMultiplier}x</span>
+          </div>
+          <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
+            <span className="transport-stat-label">Active Drivers Nearby</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600 }}>{t.rideshare.activeDrivers}</span>
+          </div>
+          <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
+            <span className="transport-stat-label">Designated Area</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600 }}>{t.rideshare.pickupZone}</span>
+          </div>
+        </InteractiveCard>
       </div>
 
       <div className="dashboard-grid" style={{ marginTop: 'var(--space-4)' }}>
         {/* Interactive Parking Reservation */}
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="transport" style={{ color: 'var(--accent-success)' }} /> Pre-Book Stadium Parking
@@ -160,7 +173,7 @@ export default function Transport() {
                     />
                   </div>
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '10px' }}>
+                <button type="submit" className="btn btn-primary btn-glow" style={{ width: '100%', padding: '10px' }}>
                   Confirm Reservation & Generate Pass
                 </button>
               </form>
@@ -191,10 +204,10 @@ export default function Transport() {
               </div>
             )}
           </div>
-        </div>
+        </InteractiveCard>
 
         {/* Interactive Ride Assistance */}
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="accessibility" style={{ color: 'var(--accent-primary-light)' }} /> Request Shuttle / Accessibility Ride
@@ -223,7 +236,7 @@ export default function Transport() {
                   </div>
                 </div>
                 <button 
-                  className="btn btn-primary" 
+                  className="btn btn-primary btn-glow" 
                   onClick={handleRequestRide} 
                   disabled={isBookingRide}
                   style={{ width: '100%', padding: '10px' }}
@@ -253,11 +266,11 @@ export default function Transport() {
               </div>
             )}
           </div>
-        </div>
+        </InteractiveCard>
       </div>
 
       {/* Highway Conditions */}
-      <div className="card" style={{ marginTop: 'var(--space-4)' }}>
+      <InteractiveCard style={{ marginTop: 'var(--space-4)' }}>
         <div className="card-header">
           <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Icon name="road" style={{ color: 'var(--accent-info)' }} /> Traffic Conditions
@@ -279,7 +292,7 @@ export default function Transport() {
             ))}
           </div>
         </div>
-      </div>
+      </InteractiveCard>
     </div>
   );
 }

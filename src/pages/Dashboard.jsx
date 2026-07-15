@@ -5,11 +5,13 @@ import LiveFeed from '../components/dashboard/LiveFeed';
 import WeatherWidget from '../components/dashboard/WeatherWidget';
 import StatusBadge from '../components/common/StatusBadge';
 import Icon from '../components/common/Icon';
+import InteractiveCard from '../components/common/InteractiveCard';
 
 export default function Dashboard() {
   const data = useRealTimeData();
   if (!data?.stats) return <div className="page"><div className="stats-grid">{[...Array(6)].map((_, i) => <div key={i} className="skeleton" style={{ height: 160 }} />)}</div></div>;
   const { stats, crowdData, liveFeed, weather, matchInfo } = data;
+  
   return (
     <div className="page">
       <div className="page-header">
@@ -30,7 +32,7 @@ export default function Dashboard() {
       </div>
 
       <div className="dashboard-grid">
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="navigation" style={{ color: 'var(--accent-primary-light)' }} /> Crowd Density Heatmap
@@ -40,9 +42,9 @@ export default function Dashboard() {
           <div className="card-body">
             <CrowdHeatmap crowdData={crowdData} />
           </div>
-        </div>
+        </InteractiveCard>
 
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="feed" style={{ color: 'var(--accent-info)' }} /> Live Event Feed
@@ -52,11 +54,11 @@ export default function Dashboard() {
           <div className="card-body">
             <LiveFeed events={liveFeed} />
           </div>
-        </div>
+        </InteractiveCard>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="ball" style={{ color: 'var(--accent-success)' }} /> Match Status
@@ -81,9 +83,9 @@ export default function Dashboard() {
               <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: 'var(--space-2)' }}>{matchInfo.venue}</div>
             </div>}
           </div>
-        </div>
+        </InteractiveCard>
 
-        <div className="card">
+        <InteractiveCard>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="weather" style={{ color: 'var(--accent-warning)' }} /> Weather
@@ -92,7 +94,7 @@ export default function Dashboard() {
           <div className="card-body">
             <WeatherWidget weather={weather} />
           </div>
-        </div>
+        </InteractiveCard>
       </div>
     </div>
   );
