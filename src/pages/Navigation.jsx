@@ -4,6 +4,7 @@ import { sendChatMessage } from '../services/geminiService';
 import { getCurrentVenueId } from '../data/venues';
 import Icon from '../components/common/Icon';
 import InteractiveCard from '../components/common/InteractiveCard';
+import StatusBadge from '../components/common/StatusBadge';
 
 const FILTERS = ['All', 'Food', 'Restroom', 'Medical', 'Exit', 'Accessibility'];
 const POI_COLORS = { food: '#F59E0B', restroom: '#3B82F6', medical: '#EF4444', exit: '#22C55E', accessibility: '#8B5CF6' };
