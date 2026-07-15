@@ -139,7 +139,7 @@ export default function Sidebar({ collapsed, onToggle, alertCount = 0 }) {
             <line x1="2" y1="12" x2="22" y2="12" />
           </svg>
         </div>
-        {!collapsed && <div className="sidebar-logo-text">Stadium<span>AI</span></div>}
+        {!collapsed && <div className="sidebar-logo-text">Apex<span>Arena</span></div>}
       </div>
 
       <nav 

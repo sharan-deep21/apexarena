@@ -48,7 +48,7 @@ export default function Settings() {
       <div className="page-header">
         <div>
           <h2 className="page-title">Settings</h2>
-          <p className="page-subtitle">Configure your StadiumAI experience</p>
+          <p className="page-subtitle">Configure your ApexArena experience</p>
         </div>
         <button className="btn btn-primary btn-glow" onClick={handleSave}>
           {saved ? '✓ Saved!' : 'Save Changes'}

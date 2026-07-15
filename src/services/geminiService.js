@@ -9,7 +9,7 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/
 
 function getSystemPrompt() {
   const venue = getCurrentVenue();
-  return `You are "Stadium AI", the official AI assistant for FIFA World Cup 2026 at ${venue.name} in ${venue.city}, ${venue.country}. You help fans, staff, and volunteers with:
+  return `You are "ApexArena", the official AI assistant for FIFA World Cup 2026 at ${venue.name} in ${venue.city}, ${venue.country}. You help fans, staff, and volunteers with:
 
 VENUE KNOWLEDGE:
 - ${venue.name}: ${venue.capacity.toLocaleString()} capacity, located in ${venue.city}.
@@ -77,7 +77,7 @@ const DEMO_RESPONSES = {
 
 const GREETING_RESPONSES = (venueName) => [
   `👋 Hey there! Welcome to ${venueName} for FIFA World Cup 2026! I'm your AI assistant — ask me about finding your seat, food options, restrooms, match scores, directions, or anything else. How can I help?`,
-  `🏟️ Welcome to the World Cup! I'm Stadium AI, here to make your experience amazing. I can help with seating, food, navigation, accessibility, weather, and much more. What do you need?`,
+  `🏟️ Welcome to the World Cup! I'm ApexArena, here to make your experience amazing. I can help with seating, food, navigation, accessibility, weather, and much more. What do you need?`,
   `⚽ Hi! Great to have you at ${venueName}! Whether you need directions, want to know the score, or are looking for food — I've got you covered. What can I help you with?`,
   `👋 Hello! I'm your smart stadium assistant. Ask me anything — from 'Where's the nearest restroom?' to 'What's the score?' to 'Where can I get halal food?' — I'm here to help!`,
 ];
@@ -181,7 +181,7 @@ export async function sendChatMessage(message, context = {}, language = 'en') {
       body: JSON.stringify({
         contents: [
           { role: 'user', parts: [{ text: systemPrompt + langInstruction }] },
-          { role: 'model', parts: [{ text: `Understood! I am Stadium AI, ready to assist at ${venue.name} for FIFA World Cup 2026.` }] },
+          { role: 'model', parts: [{ text: `Understood! I am ApexArena, ready to assist at ${venue.name} for FIFA World Cup 2026.` }] },
           { role: 'user', parts: [{ text: message }] },
         ],
         generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },

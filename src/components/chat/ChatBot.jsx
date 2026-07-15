@@ -37,7 +37,7 @@ export default function ChatBot() {
                 <Icon name="fifaAi" width="20" height="20" />
               </div>
               <div>
-                <div className="chat-header-title">Stadium AI Assistant</div>
+                <div className="chat-header-title">ApexArena Assistant</div>
                 <div className="chat-header-status">Online • FIFA WC 2026</div>
               </div>
             </div>

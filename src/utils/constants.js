@@ -1,4 +1,4 @@
-export const APP_NAME = 'StadiumAI';
+export const APP_NAME = 'ApexArena';
 export const APP_VERSION = '1.0.0';
 export const APP_DESCRIPTION = 'GenAI-Powered Smart Stadium Operations for FIFA World Cup 2026';
 export const REFRESH_INTERVAL = 3000;

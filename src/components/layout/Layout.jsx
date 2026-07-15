@@ -6,7 +6,7 @@ const PAGE_TITLES = { '/': 'Dashboard', '/crowd': 'Crowd Management', '/navigati
 export default function Layout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
-  const title = PAGE_TITLES[location.pathname] || 'StadiumAI';
+  const title = PAGE_TITLES[location.pathname] || 'ApexArena';
   return (
     <div className="app-layout">
       {/* Global SVG threshold filter for gooey text transitions */}

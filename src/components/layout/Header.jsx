@@ -85,7 +85,7 @@ export default function Header({ title, sidebarCollapsed }) {
         <div>
           <h1 className="header-page-title">{title}</h1>
           <div className="header-breadcrumb">
-            <span>StadiumAI</span>
+            <span>ApexArena</span>
             <span className="header-breadcrumb-sep">/</span>
             <span>{title}</span>
           </div>
