@@ -29,42 +29,56 @@ export default function ChatBot() {
 
   return (
     <>
-      {isOpen && (
-        <div className="chat-panel" role="dialog" aria-label="AI Assistant">
-          <div className="chat-header">
-            <div className="chat-header-info">
-              <div className="chat-avatar" style={{ padding: '4px', background: 'rgba(255, 255, 255, 0.1)' }}>
-                <Icon name="fifaAi" width="20" height="20" />
-              </div>
-              <div>
-                <div className="chat-header-title">ApexArena Assistant</div>
-                <div className="chat-header-status">Online • FIFA WC 2026</div>
-              </div>
+      <div className={`chat-panel ${isOpen ? 'open' : ''}`} role="dialog" aria-label="AI Assistant">
+        <div className="chat-header">
+          <div className="chat-header-info">
+            <div className="chat-avatar" style={{ padding: '4px', background: 'rgba(255, 255, 255, 0.1)' }}>
+              <Icon name="fifaAi" width="20" height="20" />
             </div>
-            <button onClick={() => setIsOpen(false)} style={{ color: 'white', fontSize: 'var(--text-lg)' }} aria-label="Close chat">✕</button>
+            <div>
+              <div className="chat-header-title">ApexArena Assistant</div>
+              <div className="chat-header-status">Online • FIFA WC 2026</div>
+            </div>
           </div>
-          <div className="chat-messages">
-            {messages.map(m => <ChatMessage key={m.id} message={m} />)}
-            {isLoading && (
-              <ChatMessage message={{ id: 'loading', sender: 'bot', text: '', isLoading: true, timestamp: new Date() }} />
-            )}
-            <div ref={endRef} />
-          </div>
-          <QuickActions onAction={sendMessage} />
-          <div className="chat-input-area">
-            <input className="chat-input" type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey} placeholder="Ask me anything about the stadium..." aria-label="Chat message input" />
-            <button className="chat-send-btn" onClick={handleSend} disabled={!input.trim() || isLoading} aria-label="Send message">↑</button>
-          </div>
+          <button onClick={() => setIsOpen(false)} style={{ color: 'white', fontSize: 'var(--text-lg)', background: 'none', border: 'none', cursor: 'pointer' }} aria-label="Close chat">✕</button>
         </div>
-      )}
-      {!isOpen && (
-        <div className="avatar-hello-bubble">
-          Hello! 👋
+        <div className="chat-messages">
+          {messages.map(m => <ChatMessage key={m.id} message={m} />)}
+          {isLoading && (
+            <ChatMessage message={{ id: 'loading', sender: 'bot', text: '', isLoading: true, timestamp: new Date() }} />
+          )}
+          <div ref={endRef} />
         </div>
-      )}
-      <button className={`chat-fab ${isOpen ? 'active' : ''}`} onClick={() => setIsOpen(!isOpen)} aria-label={isOpen ? 'Close assistant' : 'Open AI assistant'}>
-        {isOpen ? '✕' : (
-          <svg className="cute-avatar-svg" viewBox="0 0 40 40" width="38" height="38" style={{ overflow: 'visible' }}>
+        <QuickActions onAction={sendMessage} />
+        <div className="chat-input-area">
+          <input className="chat-input" type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey} placeholder="Ask me anything about the stadium..." aria-label="Chat message input" />
+          <button className="chat-send-btn" onClick={handleSend} disabled={!input.trim() || isLoading} aria-label="Send message">↑</button>
+        </div>
+      </div>
+
+      <div className={`avatar-hello-bubble ${isOpen ? 'hidden' : ''}`}>
+        Hello! 👋
+      </div>
+
+      <button 
+        className={`chat-fab ${isOpen ? 'active' : ''}`} 
+        onClick={() => setIsOpen(!isOpen)} 
+        aria-label={isOpen ? 'Close assistant' : 'Open AI assistant'}
+        style={{ overflow: 'hidden' }}
+      >
+        {/* Waving Mascot: scale and rotate down to 0 when open */}
+        <span style={{
+          position: 'absolute',
+          transform: isOpen ? 'rotate(90deg) scale(0)' : 'rotate(0deg) scale(1)',
+          opacity: isOpen ? 0 : 1,
+          transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%'
+        }}>
+          <svg className="cute-avatar-svg" viewBox="0 0 40 40" width="36" height="36" style={{ overflow: 'visible' }}>
             {/* Glow */}
             <circle cx="20" cy="20" r="16" fill="rgba(0, 242, 254, 0.15)" filter="blur(2px)" />
             {/* Body */}
@@ -99,7 +113,23 @@ export default function ChatBot() {
               </linearGradient>
             </defs>
           </svg>
-        )}
+        </span>
+
+        {/* Close Icon: scale and rotate up to 1 when open */}
+        <span style={{
+          position: 'absolute',
+          transform: isOpen ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0)',
+          opacity: isOpen ? 1 : 0,
+          transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '22px',
+          fontWeight: 'bold',
+          color: 'white'
+        }}>
+          ✕
+        </span>
       </button>
     </>
   );
