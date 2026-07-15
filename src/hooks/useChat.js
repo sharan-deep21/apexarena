@@ -1,9 +1,17 @@
 import { useState, useCallback } from 'react';
 import { sendChatMessage } from '../services/geminiService';
+import { getCurrentVenue } from '../data/venues';
 
 export function useChat() {
+  const venue = getCurrentVenue();
+  
   const [messages, setMessages] = useState([
-    { id: 1, text: "Welcome to MetLife Stadium! 🏟️ I'm your AI assistant for FIFA World Cup 2026. How can I help you today?", sender: 'bot', timestamp: new Date() }
+    { 
+      id: 1, 
+      text: `Welcome to ${venue.name}! 🏟️ I'm your AI assistant for FIFA World Cup 2026. How can I help you today?`, 
+      sender: 'bot', 
+      timestamp: new Date() 
+    }
   ]);
   const [isLoading, setIsLoading] = useState(false);
 
