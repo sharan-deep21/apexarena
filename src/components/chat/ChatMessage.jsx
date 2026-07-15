@@ -36,7 +36,9 @@ export function ChatBubbleAvatar({ src, fallback = "AI", isBot = false, classNam
           <Icon name="fifaAi" width="16" height="16" />
         </div>
       ) : (
-        fallback
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', color: 'var(--accent-primary-light)' }}>
+          <Icon name="user" width="16" height="16" />
+        </div>
       )}
     </div>
   );
@@ -74,7 +76,6 @@ export default function ChatMessage({ message, onRegenerate }) {
       <ChatBubbleAvatar 
         isBot={isBot} 
         fallback={isBot ? "AI" : "US"} 
-        src={isBot ? undefined : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&q=80&crop=faces&fit=crop"}
       />
       <div className="chat-bubble-message-wrapper" style={{ flex: 1 }}>
         <ChatBubbleMessage variant={variant} isLoading={message.isLoading}>
