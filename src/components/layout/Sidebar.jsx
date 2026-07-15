@@ -35,7 +35,7 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    if (!collapsed || mouseY === Infinity || !ref.current) {
+    if (mouseY === Infinity || !ref.current) {
       setScale(1);
       return;
     }
@@ -45,11 +45,12 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
     const itemCenterY = rect.top + rect.height / 2;
 
     const distance = Math.abs(mouseY - itemCenterY);
-    const maxDistance = 120; // range of influence
+    const maxDistance = 140; // slightly wider range of influence for smoothness
 
     if (distance < maxDistance) {
       const factor = 1 - distance / maxDistance; // 0 to 1
-      const targetScale = 1 + factor * 0.45; // Max scale up to 1.45x magnification
+      const maxScaleFactor = collapsed ? 0.35 : 0.08; // 1.35x when collapsed, 1.08x when expanded
+      const targetScale = 1 + factor * maxScaleFactor;
       setScale(targetScale);
     } else {
       setScale(1);
@@ -65,8 +66,10 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
         className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''} ${collapsed ? 'collapsed-dock-item' : ''}`}
         style={{
           transform: `scale(${scale})`,
-          transition: mouseY === Infinity ? 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, border-color 0.2s' : 'transform 0.08s ease-out, background-color 0.2s, border-color 0.2s',
-          transformOrigin: 'center center',
+          transition: mouseY === Infinity 
+            ? 'transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, border-color 0.2s' 
+            : 'transform 0.12s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s, border-color 0.2s',
+          transformOrigin: collapsed ? 'center center' : 'left center',
           display: 'flex',
           alignItems: 'center',
           gap: 'var(--space-3)',
@@ -114,7 +117,6 @@ export default function Sidebar({ collapsed, onToggle, alertCount = 0 }) {
   const [mouseY, setMouseY] = useState(Infinity);
 
   const handleMouseMove = (e) => {
-    if (!collapsed) return;
     setMouseY(e.clientY);
   };
 
