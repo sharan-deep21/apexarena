@@ -505,5 +505,74 @@ body {
   align-self: flex-end;
 }
 
+/* ── Apple-style Collapsed Sidebar Dock & Tooltips ── */
+.collapsed-dock-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--glass-card-border) !important;
+  background: var(--glass-card-bg) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+.collapsed-dock-item:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(0, 242, 254, 0.4) !important;
+}
+
+.collapsed-dock-item.active {
+  background: var(--accent-primary) !important;
+  color: white !important;
+  border-color: rgba(0, 242, 254, 0.5) !important;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.35) !important;
+}
+
+/* Active badge dot when collapsed */
+.sidebar-link-badge-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-danger);
+  border: 1.5px solid var(--bg-secondary);
+  box-shadow: 0 0 8px var(--accent-danger);
+}
+
+/* Floating Tooltip sliding out on the right */
+.sidebar-dock-tooltip {
+  position: absolute;
+  left: 68px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 9999;
+  animation: tooltipSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tooltipSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
 
 

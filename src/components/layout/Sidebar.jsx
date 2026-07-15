@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import Icon from '../common/Icon';
 
@@ -28,7 +29,105 @@ const NAV_ITEMS = [
   },
 ];
 
+function SidebarItem({ item, collapsed, alertCount, mouseY }) {
+  const ref = useRef(null);
+  const [scale, setScale] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (!collapsed || mouseY === Infinity || !ref.current) {
+      setScale(1);
+      return;
+    }
+
+    const el = ref.current;
+    const rect = el.getBoundingClientRect();
+    const parent = el.offsetParent;
+    if (!parent) return;
+
+    // Calculate vertical center of this item relative to the sidebar container
+    const parentRect = parent.getBoundingClientRect();
+    const itemCenterY = rect.top - parentRect.top + rect.height / 2;
+
+    const distance = Math.abs(mouseY - itemCenterY);
+    const maxDistance = 100; // range of influence
+
+    if (distance < maxDistance) {
+      const factor = 1 - distance / maxDistance; // 0 to 1
+      const targetScale = 1 + factor * 0.4; // Max scale up to 1.4x magnification
+      setScale(targetScale);
+    } else {
+      setScale(1);
+    }
+  }, [mouseY, collapsed]);
+
+  return (
+    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <NavLink 
+        ref={ref}
+        to={item.path} 
+        end={item.path === '/'} 
+        className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''} ${collapsed ? 'collapsed-dock-item' : ''}`}
+        style={{
+          transform: `scale(${scale})`,
+          transition: mouseY === Infinity ? 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s, border-color 0.2s' : 'transform 0.08s ease-out, background-color 0.2s, border-color 0.2s',
+          transformOrigin: 'center center',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-3)',
+          padding: collapsed ? '0' : 'var(--space-3)',
+          borderRadius: collapsed ? '50%' : 'var(--radius-sm)',
+          width: collapsed ? '40px' : '100%',
+          height: collapsed ? '40px' : 'auto',
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          margin: collapsed ? '6px auto' : '0',
+          position: 'relative'
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <span className="sidebar-link-icon" style={{ 
+          transform: collapsed ? `scale(${1 / Math.sqrt(scale)})` : 'none', 
+          transition: 'transform 0.15s ease',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Icon name={item.iconName} />
+        </span>
+        {!collapsed && <span>{item.label}</span>}
+        {!collapsed && item.hasBadge && alertCount > 0 && (
+          <span className="sidebar-link-badge">{alertCount}</span>
+        )}
+        {collapsed && item.hasBadge && alertCount > 0 && (
+          <span className="sidebar-link-badge-dot" />
+        )}
+      </NavLink>
+
+      {/* Floating Apple-style Tooltip on Hover when Collapsed */}
+      {collapsed && isHovered && (
+        <div className="sidebar-dock-tooltip">
+          {item.label}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Sidebar({ collapsed, onToggle, alertCount = 0 }) {
+  const containerRef = useRef(null);
+  const [mouseY, setMouseY] = useState(Infinity);
+
+  const handleMouseMove = (e) => {
+    if (!collapsed || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMouseY(e.clientY - rect.top);
+  };
+
+  const handleMouseLeave = () => {
+    setMouseY(Infinity);
+  };
+
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`} aria-label="Main navigation">
       <div className="sidebar-logo">
@@ -42,29 +141,36 @@ export default function Sidebar({ collapsed, onToggle, alertCount = 0 }) {
         </div>
         {!collapsed && <div className="sidebar-logo-text">Stadium<span>AI</span></div>}
       </div>
-      <nav className="sidebar-nav">
+
+      <nav 
+        className="sidebar-nav" 
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          gap: collapsed ? '4px' : 'var(--space-1)',
+          padding: collapsed ? '16px var(--space-2)' : 'var(--space-3)'
+        }}
+      >
         {NAV_ITEMS.map(section => (
-          <div key={section.section}>
+          <div key={section.section} style={{ display: 'contents' }}>
             {!collapsed && <div className="sidebar-section-label">{section.section}</div>}
             {section.items.map(item => (
-              <NavLink 
+              <SidebarItem 
                 key={item.path} 
-                to={item.path} 
-                end={item.path === '/'} 
-                className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
-              >
-                <span className="sidebar-link-icon">
-                  <Icon name={item.iconName} />
-                </span>
-                {!collapsed && <span>{item.label}</span>}
-                {!collapsed && item.hasBadge && alertCount > 0 && (
-                  <span className="sidebar-link-badge">{alertCount}</span>
-                )}
-              </NavLink>
+                item={item} 
+                collapsed={collapsed} 
+                alertCount={alertCount}
+                mouseY={mouseY}
+              />
             ))}
           </div>
         ))}
       </nav>
+
       <div className="sidebar-footer">
         <button className="sidebar-toggle" onClick={onToggle} aria-label="Toggle sidebar">
           {collapsed ? '▶' : '◀'}
