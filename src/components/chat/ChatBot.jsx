@@ -69,6 +69,8 @@ export default function ChatBot() {
         {/* Waving Mascot: scale and rotate down to 0 when open */}
         <span style={{
           position: 'absolute',
+          top: 0,
+          left: 0,
           transform: isOpen ? 'rotate(90deg) scale(0)' : 'rotate(0deg) scale(1)',
           opacity: isOpen ? 0 : 1,
           transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s',
@@ -118,12 +120,16 @@ export default function ChatBot() {
         {/* Close Icon: scale and rotate up to 1 when open */}
         <span style={{
           position: 'absolute',
+          top: 0,
+          left: 0,
           transform: isOpen ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0)',
           opacity: isOpen ? 1 : 0,
           transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          width: '100%',
+          height: '100%',
           fontSize: '22px',
           fontWeight: 'bold',
           color: 'white'
