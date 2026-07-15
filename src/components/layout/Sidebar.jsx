@@ -42,19 +42,14 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
 
     const el = ref.current;
     const rect = el.getBoundingClientRect();
-    const parent = el.offsetParent;
-    if (!parent) return;
-
-    // Calculate vertical center of this item relative to the sidebar container
-    const parentRect = parent.getBoundingClientRect();
-    const itemCenterY = rect.top - parentRect.top + rect.height / 2;
+    const itemCenterY = rect.top + rect.height / 2;
 
     const distance = Math.abs(mouseY - itemCenterY);
-    const maxDistance = 100; // range of influence
+    const maxDistance = 120; // range of influence
 
     if (distance < maxDistance) {
       const factor = 1 - distance / maxDistance; // 0 to 1
-      const targetScale = 1 + factor * 0.4; // Max scale up to 1.4x magnification
+      const targetScale = 1 + factor * 0.45; // Max scale up to 1.45x magnification
       setScale(targetScale);
     } else {
       setScale(1);
@@ -119,9 +114,8 @@ export default function Sidebar({ collapsed, onToggle, alertCount = 0 }) {
   const [mouseY, setMouseY] = useState(Infinity);
 
   const handleMouseMove = (e) => {
-    if (!collapsed || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    setMouseY(e.clientY - rect.top);
+    if (!collapsed) return;
+    setMouseY(e.clientY);
   };
 
   const handleMouseLeave = () => {
