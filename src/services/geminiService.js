@@ -84,28 +84,42 @@ const GREETING_RESPONSES = (venueName) => [
 
 // Keyword mapping: keyword → response key
 const KEYWORD_MAP = [
+  // Specific domains first
   { keys: ['seat', 'section', 'ticket', 'row', 'gate', 'entrance', 'entry', 'enter'], response: 'seat' },
   { keys: ['food', 'eat', 'hungry', 'lunch', 'dinner', 'snack', 'burger', 'pizza', 'taco', 'sushi', 'halal', 'vegan', 'vegetarian', 'gluten', 'restaurant', 'menu', 'concession', 'beer', 'drink', 'bar', 'coffee', 'beverage'], response: 'food' },
   { keys: ['restroom', 'bathroom', 'washroom', 'toilet', 'wc', 'loo', 'lavatory', 'pee', 'urgently', 'baby change', 'changing station', 'diaper'], response: 'restroom' },
   { keys: ['wheelchair', 'accessible', 'disability', 'disabled', 'ramp', 'elevator', 'lift', 'hearing', 'blind', 'visual', 'sensory', 'service animal', 'sign language'], response: 'accessibility' },
   { keys: ['park', 'car', 'drive', 'uber', 'lyft', 'taxi', 'cab', 'rideshare', 'ride share', 'bus', 'train', 'transit', 'subway', 'shuttle', 'transport', 'traffic', 'commute', 'lot a', 'lot b', 'lot c', 'lot d'], response: 'parking' },
   { keys: ['emergency', 'help', 'danger', 'fire', 'evacuate', 'evacuation', 'security', 'police', 'fight', 'threat', 'suspicious', 'alarm', 'unsafe', 'report', 'issue', 'problem', 'complaint'], response: 'emergency' },
-  { keys: ['direction', 'where', 'how to get', 'navigate', 'find', 'map', 'way to', 'route', 'walk', 'go to', 'get to', 'closest', 'nearest', 'location', 'located'], response: 'directions' },
   { keys: ['score', 'match', 'game', 'goal', 'result', 'who is winning', 'who scored', 'brazil', 'germany', 'half time', 'halftime', 'red card', 'yellow card', 'penalty', 'kickoff', 'kick off', 'lineup'], response: 'match' },
   { keys: ['weather', 'rain', 'temperature', 'hot', 'cold', 'sun', 'wind', 'forecast', 'umbrella', 'sunscreen', 'jacket'], response: 'weather' },
-  { keys: ['medical', 'first aid', 'doctor', 'nurse', 'injury', 'injured', 'hurt', 'sick', 'ill', 'faint', 'dizzy', 'ambulance', 'hospital', 'medicine', 'allergy', 'allergic', 'epipen', 'defibrillator', 'aed', 'health'], response: 'medical' },
   { keys: ['wifi', 'wi-fi', 'internet', 'charge', 'charging', 'battery', 'phone', 'plug', 'outlet', 'usb', 'signal', 'connection', 'data'], response: 'wifi' },
   { keys: ['kid', 'child', 'children', 'baby', 'family', 'infant', 'toddler', 'stroller', 'pram', 'play area', 'face paint', 'ear protection'], response: 'kids' },
   { keys: ['shop', 'store', 'merch', 'merchandise', 'jersey', 'shirt', 'souvenir', 'buy', 'purchase', 'gift', 'scarf', 'hat', 'cap', 'ball', 'flag'], response: 'merch' },
   { keys: ['water', 'hydrat', 'thirsty', 'refill', 'bottle', 'fountain', 'tap water'], response: 'water' },
   { keys: ['schedule', 'fixture', 'next match', 'upcoming', 'final', 'semi', 'what time', 'when is', 'calendar', 'dates'], response: 'schedule' },
   { keys: ['lost', 'found', 'missing', 'forgot', 'left behind', 'lost and found', 'misplaced', 'stolen'], response: 'lost' },
+  { keys: ['medical', 'first aid', 'doctor', 'nurse', 'injury', 'injured', 'hurt', 'sick', 'ill', 'faint', 'dizzy', 'ambulance', 'hospital', 'medicine', 'allergy', 'allergic', 'epipen', 'defibrillator', 'aed', 'health'], response: 'medical' },
+  
+  // Generic question/nav helpers at the bottom
+  { keys: ['direction', 'where', 'how to get', 'navigate', 'find', 'map', 'way to', 'route', 'walk', 'go to', 'get to', 'closest', 'nearest', 'location', 'located'], response: 'directions' },
 ];
 
 /** Find a matching demo response */
 function getDemoResponse(message) {
   const venue = getCurrentVenue();
   const lower = message.toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
+
+  // Direct checks for common queries to ensure "natural answers"
+  if (lower.includes('name') && (lower.includes('stadium') || lower.includes('venue') || lower.includes('place'))) {
+    return `🏟️ You are currently at **${venue.name}** in ${venue.city}, ${venue.country}! Let me know if you need help finding your seat or exploring the concessions!`;
+  }
+  if (lower.includes('capacity') || lower.includes('how big') || lower.includes('size')) {
+    return `📊 **${venue.name}** has a total capacity of **${venue.capacity.toLocaleString()}** spectators for the FIFA World Cup 2026!`;
+  }
+  if (lower.includes('where') && (lower.includes('stadium') || lower.includes('located') || lower.includes('city'))) {
+    return `📍 **${venue.name}** is located in **${venue.city}, ${venue.country}**.`;
+  }
 
   // Check for greetings
   if (/^(hi|hey|hello|yo|sup|howdy|greetings|good morning|good evening|good afternoon|what can you do|what do you do)\b/.test(lower.trim())) {
@@ -118,10 +132,12 @@ function getDemoResponse(message) {
     return `😊 You're welcome! Enjoy the match at ${venue.name}! If you need anything else during the game, just ask. Go enjoy the beautiful game! ⚽🎉`;
   }
 
-  // Keyword matching — check all keyword groups
+  // Keyword matching — check all keyword groups with word boundaries
   for (const group of KEYWORD_MAP) {
     for (const keyword of group.keys) {
-      if (lower.includes(keyword)) {
+      const escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp(`\\b${escaped}\\b`, 'i');
+      if (regex.test(lower)) {
         const baseResponse = DEMO_RESPONSES[group.response];
         // Replace MetLife references in static demo responses with the current venue name
         return baseResponse.replaceAll('MetLife Stadium', venue.name).replaceAll('MetLife', venue.name);
