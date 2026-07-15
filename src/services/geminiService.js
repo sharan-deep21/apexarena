@@ -3,12 +3,16 @@
  * Core GenAI service for chat, crowd analysis, emergency advice, translation, and sustainability.
  */
 
+import { getCurrentVenue } from '../data/venues';
+
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-const SYSTEM_PROMPT = `You are "Stadium AI", the official AI assistant for FIFA World Cup 2026 at MetLife Stadium in East Rutherford, New Jersey. You help fans, staff, and volunteers with:
+function getSystemPrompt() {
+  const venue = getCurrentVenue();
+  return `You are "Stadium AI", the official AI assistant for FIFA World Cup 2026 at ${venue.name} in ${venue.city}, ${venue.country}. You help fans, staff, and volunteers with:
 
 VENUE KNOWLEDGE:
-- MetLife Stadium: 82,500 capacity, located at 1 MetLife Stadium Dr, East Rutherford, NJ 07073
+- ${venue.name}: ${venue.capacity.toLocaleString()} capacity, located in ${venue.city}.
 - 12 zones: North/South/East/West Upper & Lower, VIP North & South, Field Level East & West
 - 4 main gates: Gate 1 (North), Gate 2 (East), Gate 3 (South), Gate 4 (West)
 - Accessible entrances at Gates A (North) and B (South)
@@ -27,16 +31,15 @@ NAVIGATION TIPS:
 
 TRANSPORTATION:
 - Parking lots A-D surrounding the stadium, recommended pre-booking
-- NJ Transit trains to Meadowlands station
-- Bus routes 160 and 165 from Port Authority
+- Transit trains to local municipal/transit station
 - Rideshare pickup at Lot G designated zone
 
 EMERGENCY:
 - For emergencies: alert nearest staff or text HELP to stadium number
 - First aid stations: East (Section 112), West (Section 332)
-- Nearest hospital: Hackensack University Medical Center, 4.2 miles
 
 Keep responses concise, helpful, and friendly. Use emojis sparingly. If asked about match scores or live events, provide helpful context. Support multiple languages when requested.`;
+}
 
 const DEMO_RESPONSES = {
   seat: "🎫 **Finding Your Seat:**\n\nCheck your ticket for **Section**, **Row**, and **Seat** number.\n\n**Level Guide:**\n- **Sections 100-150**: Lower Level (closest to field)\n- **Sections 200-250**: Upper Level\n- **Sections 300-350**: Club Level\n- **VIP**: Accessible via Gates 1 & 3 elevators\n\nFollow the illuminated overhead signs to your section. Staff in **yellow vests** are at every entrance to help. Digital wayfinding kiosks are located at all 4 gates!\n\n💡 **Tip:** Take a photo of your ticket — it makes re-entry much faster.",
@@ -45,21 +48,21 @@ const DEMO_RESPONSES = {
 
   restroom: "🚻 **Restroom Locations:**\n\nRestrooms are available at all four cardinal points of each level:\n\n- 🚻 **North** — Near Gate 1, both levels\n- 🚻 **South** — Near Gate 3, both levels\n- 🚻 **East** — Near Section 112, both levels\n- 🚻 **West** — Near Section 332, both levels\n- ♿ **Accessible restrooms** — Available at all locations\n- 👶 **Family restrooms** with changing stations — Gates 1 & 3\n\n📍 **Nearest to you:** Head to the closest concourse corner — restrooms are clearly marked with overhead signs.\n\n💡 **Tip:** East restrooms typically have the shortest lines during the match!",
 
-  accessibility: "♿ **Accessibility at MetLife Stadium:**\n\n• **Accessible Entrances:** Gates A (North) and B (South) with ramp access\n• **Wheelchair Seating:** Available in all sections — ask at Guest Services\n• **Elevators:** Located at Gates 1 and 3 for all levels\n• **Accessible Restrooms:** At all restroom locations\n• **Service Animals:** Welcome throughout the venue\n• **Assistive Listening:** Devices at Guest Services (Gate 1)\n• **Sensory Room:** Near Section 114 for guests needing a calm space\n• **Sign Language:** Interpreters available upon request at Guest Services\n\nNeed specific directions? Tell me your section and I'll guide you!",
+  accessibility: "♿ **Accessibility Guide:**\n\n• **Accessible Entrances:** Gates A (North) and B (South) with ramp access\n• **Wheelchair Seating:** Available in all sections — ask at Guest Services\n• **Elevators:** Located at Gates 1 and 3 for all levels\n• **Accessible Restrooms:** At all restroom locations\n• **Service Animals:** Welcome throughout the venue\n• **Assistive Listening:** Devices at Guest Services (Gate 1)\n• **Sensory Room:** Near Section 114 for guests needing a calm space\n• **Sign Language:** Interpreters available upon request at Guest Services\n\nNeed specific directions? Tell me your section and I'll guide you!",
 
-  parking: "🅿️ **Parking Status (Live):**\n\n| Lot | Spots Left | Status |\n|-----|-----------|--------|\n| Lot A | 234/2,000 | ⚠️ Almost Full |\n| Lot B | 567/2,000 | ✅ Available |\n| Lot C | 890/1,500 | ✅ Available |\n| Lot D | 123/1,500 | ⚠️ Almost Full |\n\n🚗 **Rideshare Pickup:** Lot G designated zone (Uber/Lyft)\n🚌 **Free Shuttle:** Meadowlands Station → Stadium every 10 min\n🚇 **NJ Transit:** Lines 160 & 165 running on schedule\n\n💡 **Tip:** Lot B has the easiest access to Gates 1 and 2. Post-match, expect 20-30 min exit time from Lots A & D — consider waiting 15 min to avoid the rush.",
+  parking: "🅿️ **Parking Status (Live):**\n\n| Lot | Spots Left | Status |\n|-----|-----------|--------|\n| Lot A | 234/2,000 | ⚠️ Almost Full |\n| Lot B | 567/2,000 | ✅ Available |\n| Lot C | 890/1,500 | ✅ Available |\n| Lot D | 123/1,500 | ⚠️ Almost Full |\n\n🚗 **Rideshare Pickup:** Lot G designated zone (Uber/Lyft)\n🚌 **Free Shuttle:** Local Station → Stadium every 10 min\n\n💡 **Tip:** Lot B has the easiest access to Gates 1 and 2. Post-match, expect 20-30 min exit time from Lots A & D — consider waiting 15 min to avoid the rush.",
 
-  emergency: "🚨 **Emergency Assistance:**\n\nFor immediate help:\n1. **Find nearest staff** — yellow vests (general), blue vests (security)\n2. **Text HELP** to the stadium emergency number on your ticket\n3. **Guest Services** — Gate 1 or Gate 3\n4. **Call 911** for life-threatening emergencies\n\n🏥 **First Aid Stations:**\n- East side: Section 112\n- West side: Section 332\n\n🏥 **Nearest Hospital:** Hackensack University Medical Center (4.2 mi, ~8 min by ambulance)\n\nStay calm and alert nearby staff — they're trained to respond quickly.",
+  emergency: "🚨 **Emergency Assistance:**\n\nFor immediate help:\n1. **Find nearest staff** — yellow vests (general), blue vests (security)\n2. **Text HELP** to the stadium emergency number on your ticket\n3. **Guest Services** — Gate 1 or Gate 3\n4. **Call 911** for life-threatening emergencies\n\n🏥 **First Aid Stations:**\n- East side: Section 112\n- West side: Section 332\n\nStay calm and alert nearby staff — they're trained to respond quickly.",
 
-  directions: "🗺️ **Getting Around MetLife Stadium:**\n\nThe concourse forms a **complete loop** on each level — you can walk the full circle without stairs.\n\n**Key Landmarks:**\n- 🍔 Food Courts — All 4 corners\n- 🚻 Restrooms — N/S/E/W on each level\n- 🏥 First Aid — Section 112 (East), Section 332 (West)\n- 🛍️ Team Store — Near Gate 1 (North)\n- 📱 Charging Stations — Gates 2 and 4\n- 🎒 Bag Check — Gate 1 entrance\n\n**Level Changes:** Ramps at Gates 1 & 3, escalators at Gates 2 & 4, elevators at Gates 1 & 3.\n\nTell me where you are and where you need to go — I'll give you step-by-step directions!",
+  directions: "🗺️ **Getting Around:**\n\nThe concourse forms a **complete loop** on each level — you can walk the full circle without stairs.\n\n**Key Landmarks:**\n- 🍔 Food Courts — All 4 corners\n- 🚻 Restrooms — N/S/E/W on each level\n- 🏥 First Aid — Section 112 (East), Section 332 (West)\n- 🛍️ Team Store — Near Gate 1 (North)\n- 📱 Charging Stations — Gates 2 and 4\n- 🎒 Bag Check — Gate 1 entrance\n\n**Level Changes:** Ramps at Gates 1 & 3, escalators at Gates 2 & 4, elevators at Gates 1 & 3.\n\nTell me where you are and where you need to go — I'll give you step-by-step directions!",
 
-  match: "⚽ **Live Match Status:**\n\n🇧🇷 **Brazil 2 - 1 Germany** 🇩🇪\n⏱️ 67th minute • LIVE\n\n**Match Events:**\n- ⚽ 12' — Vinícius Jr. (Brazil) — stunning left-foot finish\n- ⚽ 34' — Musiala (Germany) — header from corner kick\n- 🟨 45' — Rüdiger (Germany) — tactical foul\n- ⚽ 58' — Rodrygo (Brazil) — counterattack goal\n\n📍 **Venue:** MetLife Stadium, East Rutherford, NJ\n👥 **Attendance:** ~67,000\n\nNext match at MetLife: 3rd Place Play-off, July 14",
+  match: "⚽ **Live Match Status:**\n\n🇧🇷 **Brazil 2 - 1 Germany** 🇩🇪\n⏱️ 67th minute • LIVE\n\n**Match Events:**\n- ⚽ 12' — Vinícius Jr. (Brazil) — stunning left-foot finish\n- ⚽ 34' — Musiala (Germany) — header from corner kick\n- 🟨 45' — Rüdiger (Germany) — tactical foul\n- ⚽ 58' — Rodrygo (Brazil) — counterattack goal\n\n⏱️ **Attendance:** ~67,000\n\nNext match: 3rd Place Play-off, July 14",
 
-  weather: "🌤️ **Current Weather at MetLife Stadium:**\n\n🌡️ **72°F** (22°C) — Partly Cloudy\n💧 Humidity: 45%\n💨 Wind: 8 mph from the west\n☀️ UV Index: 5 (moderate)\n\n**Forecast for today:**\n- No rain expected through the match\n- Temperature will drop to ~65°F by evening\n- Light jacket recommended for after the game\n\n💡 **Tip:** Sunscreen is available free at Guest Services!",
+  weather: "🌤️ **Current Weather:**\n\n🌡️ **72°F** (22°C) — Partly Cloudy\n💧 Humidity: 45%\n💨 Wind: 8 mph from the west\n☀️ UV Index: 5 (moderate)\n\n**Forecast for today:**\n- No rain expected through the match\n- Temperature will drop to ~65°F by evening\n- Light jacket recommended for after the game\n\n💡 **Tip:** Sunscreen is available free at Guest Services!",
 
-  medical: "🏥 **Medical Assistance:**\n\nIf you or someone nearby needs medical help:\n\n1. **Alert nearest staff** immediately (yellow or blue vests)\n2. **First Aid Stations:**\n   - 📍 Section 112 (East side) — full medical team\n   - 📍 Section 332 (West side) — full medical team\n3. **AED locations:** Every 100 sections throughout the stadium\n4. **Emergency:** Call 911 or text HELP\n\n🚑 **Nearest Hospital:** Hackensack University Medical Center\n   📍 4.2 miles away (~8 min by ambulance)\n\n24 medical staff are on duty right now across the venue.",
+  medical: "🏥 **Medical Assistance:**\n\nIf you or someone nearby needs medical help:\n\n1. **Alert nearest staff** immediately (yellow or blue vests)\n2. **First Aid Stations:**\n   - 📍 Section 112 (East side) — full medical team\n   - 📍 Section 332 (West side) — full medical team\n3. **AED locations:** Every 100 sections throughout the stadium\n4. **Emergency:** Call 911 or text HELP\n\n24 medical staff are on duty right now across the venue.",
 
-  wifi: "📶 **WiFi & Connectivity:**\n\n**Free Stadium WiFi:**\n- Network: `MetLife_FIFA2026`\n- No password required\n- Connect → Accept terms → Browse!\n\n📱 **Charging Stations:**\n- Gate 2 — 20 USB ports\n- Gate 4 — 20 USB ports\n- VIP Lounges — Wireless charging pads\n\n💡 **Tip:** If WiFi is slow in your section, try switching to 5GHz band. Cell coverage is enhanced with DAS (Distributed Antenna System) throughout the stadium.",
+  wifi: "📶 **WiFi & Connectivity:**\n\n**Free Stadium WiFi:**\n- Network: `Stadium_FIFA2026`\n- No password required\n- Connect → Accept terms → Browse!\n\n📱 **Charging Stations:**\n- Gate 2 — 20 USB ports\n- Gate 4 — 20 USB ports\n- VIP Lounges — Wireless charging pads\n\n💡 **Tip:** If WiFi is slow in your section, try switching to 5GHz band. Cell coverage is enhanced with DAS (Distributed Antenna System) throughout the stadium.",
 
   kids: "👨‍👩‍👧‍👦 **Family & Kids Services:**\n\n- 👶 **Family Restrooms** with changing stations — Gates 1 & 3\n- 🎈 **Kids Zone** — Interactive play area near Gate 2 (free)\n- 🎨 **Face Painting** — North concourse, lower level\n- 🍦 **Kid-friendly food** — Pizza Corner, Stadium Grill (kids menu)\n- 🧸 **Lost Child Station** — Guest Services, Gate 1\n- 🔇 **Sensory Room** — Section 114 (quiet, low-stimulation)\n- 🎧 **Ear protection** — Available free at Guest Services\n\n💡 **Tip:** Take a photo of your child's outfit and write your phone number on their wristband before the match!",
 
@@ -67,10 +70,17 @@ const DEMO_RESPONSES = {
 
   water: "💧 **Water & Hydration:**\n\n**Free Water Refill Stations:**\n- Gate 1 concourse\n- Gate 2 concourse\n- Gate 3 concourse\n- Gate 4 concourse\n\n🥤 Bottled water is also available at all concession stands ($4)\n\n♻️ **Sustainability note:** Please use refill stations when possible! We've saved 15,200 gallons today through our water efficiency program.\n\n💡 **Tip:** You can bring an empty reusable bottle into the stadium and fill it at any refill station for free!",
 
-  schedule: "📅 **Match Schedule at MetLife Stadium:**\n\n| Date | Match | Round |\n|------|-------|-------|\n| Jul 10 | 🇧🇷 Brazil vs Germany 🇩🇪 | Semi-Final ⚽ LIVE |\n| Jul 14 | 🇪🇸 Spain vs England 🏴󠁧󠁢󠁥󠁮󠁧󠁿 | 3rd Place |\n| Jul 19 | 🏆 TBD vs TBD | **THE FINAL** |\n\n**Gates open** 3 hours before kickoff.\n**Kickoff times:** 5:00 PM or 8:00 PM ET\n\n🎫 Tickets: fifa.com/tickets",
+  schedule: "📅 **Match Schedule:**\n\n| Date | Match | Round |\n|------|-------|-------|\n| Jul 10 | 🇧🇷 Brazil vs Germany 🇩🇪 | Semi-Final ⚽ LIVE |\n| Jul 14 | 🇪🇸 Spain vs England 🏴󠁧󠁢󠁥󠁮󠁧󠁿 | 3rd Place |\n| Jul 19 | 🏆 TBD vs TBD | **THE FINAL** |\n\n**Gates open** 3 hours before kickoff.\n**Kickoff times:** 5:00 PM or 8:00 PM ET\n\n🎫 Tickets: fifa.com/tickets",
 
-  lost: "🔍 **Lost & Found:**\n\n📍 **Location:** Guest Services desk at **Gate 1** (North)\n🕐 **Hours:** Open during events + 2 hours after\n📞 **Post-event:** Call MetLife Stadium Lost & Found\n\n**What to do:**\n1. Visit Guest Services at Gate 1 immediately\n2. Describe your item in detail\n3. Leave your contact information\n\n**Lost a person?** Staff at any gate can help with PA announcements. Lost children should be reported to the nearest security officer (blue vest) immediately.\n\n💡 **Tip:** The stadium app has a 'Find My Group' feature — share your live location with friends!",
+  lost: "🔍 **Lost & Found:**\n\n📍 **Location:** Guest Services desk at **Gate 1** (North)\n🕐 **Hours:** Open during events + 2 hours after\n\n**What to do:**\n1. Visit Guest Services at Gate 1 immediately\n2. Describe your item in detail\n3. Leave your contact information\n\n**Lost a person?** Staff at any gate can help with PA announcements. Lost children should be reported to the nearest security officer (blue vest) immediately.\n\n💡 **Tip:** The stadium app has a 'Find My Group' feature — share your live location with friends!",
 };
+
+const GREETING_RESPONSES = (venueName) => [
+  `👋 Hey there! Welcome to ${venueName} for FIFA World Cup 2026! I'm your AI assistant — ask me about finding your seat, food options, restrooms, match scores, directions, or anything else. How can I help?`,
+  `🏟️ Welcome to the World Cup! I'm Stadium AI, here to make your experience amazing. I can help with seating, food, navigation, accessibility, weather, and much more. What do you need?`,
+  `⚽ Hi! Great to have you at ${venueName}! Whether you need directions, want to know the score, or are looking for food — I've got you covered. What can I help you with?`,
+  `👋 Hello! I'm your smart stadium assistant. Ask me anything — from 'Where's the nearest restroom?' to 'What's the score?' to 'Where can I get halal food?' — I'm here to help!`,
+];
 
 // Keyword mapping: keyword → response key
 const KEYWORD_MAP = [
@@ -92,38 +102,36 @@ const KEYWORD_MAP = [
   { keys: ['lost', 'found', 'missing', 'forgot', 'left behind', 'lost and found', 'misplaced', 'stolen'], response: 'lost' },
 ];
 
-const GREETING_RESPONSES = [
-  "👋 Hey there! Welcome to MetLife Stadium for FIFA World Cup 2026! I'm your AI assistant — ask me about finding your seat, food options, restrooms, match scores, directions, or anything else. How can I help?",
-  "🏟️ Welcome to the World Cup! I'm Stadium AI, here to make your experience amazing. I can help with seating, food, navigation, accessibility, weather, and much more. What do you need?",
-  "⚽ Hi! Great to have you at MetLife Stadium! Whether you need directions, want to know the score, or are looking for food — I've got you covered. What can I help you with?",
-  "👋 Hello! I'm your smart stadium assistant. Ask me anything — from 'Where's the nearest restroom?' to 'What's the score?' to 'Where can I get halal food?' — I'm here to help!",
-];
-
 /** Find a matching demo response */
 function getDemoResponse(message) {
+  const venue = getCurrentVenue();
   const lower = message.toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
 
   // Check for greetings
   if (/^(hi|hey|hello|yo|sup|howdy|greetings|good morning|good evening|good afternoon|what can you do|what do you do)\b/.test(lower.trim())) {
-    return GREETING_RESPONSES[Math.floor(Math.random() * GREETING_RESPONSES.length)];
+    const greetings = GREETING_RESPONSES(venue.name);
+    return greetings[Math.floor(Math.random() * greetings.length)];
   }
 
   // Check for thank you
   if (/\b(thank|thanks|thx|cheers|appreciate|great help|helpful)\b/.test(lower)) {
-    return "😊 You're welcome! Enjoy the match at MetLife Stadium! If you need anything else during the game, just ask. Go enjoy the beautiful game! ⚽🎉";
+    return `😊 You're welcome! Enjoy the match at ${venue.name}! If you need anything else during the game, just ask. Go enjoy the beautiful game! ⚽🎉`;
   }
 
   // Keyword matching — check all keyword groups
   for (const group of KEYWORD_MAP) {
     for (const keyword of group.keys) {
       if (lower.includes(keyword)) {
-        return DEMO_RESPONSES[group.response];
+        const baseResponse = DEMO_RESPONSES[group.response];
+        // Replace MetLife references in static demo responses with the current venue name
+        return baseResponse.replaceAll('MetLife Stadium', venue.name).replaceAll('MetLife', venue.name);
       }
     }
   }
 
   // Fallback: random greeting
-  return GREETING_RESPONSES[Math.floor(Math.random() * GREETING_RESPONSES.length)];
+  const greetings = GREETING_RESPONSES(venue.name);
+  return greetings[Math.floor(Math.random() * greetings.length)];
 }
 
 /** Get API key from localStorage or environment */
@@ -148,14 +156,16 @@ export async function sendChatMessage(message, context = {}, language = 'en') {
     return { text: getDemoResponse(message), success: true };
   }
   try {
+    const systemPrompt = getSystemPrompt();
     const langInstruction = language !== 'en' ? `\n\nIMPORTANT: Respond in the language with code "${language}".` : '';
+    const venue = getCurrentVenue();
     const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [
-          { role: 'user', parts: [{ text: SYSTEM_PROMPT + langInstruction }] },
-          { role: 'model', parts: [{ text: 'Understood! I am Stadium AI, ready to assist at MetLife Stadium for FIFA World Cup 2026.' }] },
+          { role: 'user', parts: [{ text: systemPrompt + langInstruction }] },
+          { role: 'model', parts: [{ text: `Understood! I am Stadium AI, ready to assist at ${venue.name} for FIFA World Cup 2026.` }] },
           { role: 'user', parts: [{ text: message }] },
         ],
         generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
@@ -180,17 +190,18 @@ export async function sendChatMessage(message, context = {}, language = 'en') {
 
 /** Get AI crowd analysis */
 export async function getCrowdAnalysis(crowdData) {
+  const venue = getCurrentVenue();
   if (isDemoMode()) {
-    return { text: 'Stadium at 81% capacity. North Upper approaching critical levels — recommend redirecting to West Lower and Field Level sections. Concession areas experiencing normal halftime surge.', success: true };
+    return { text: `${venue.name} at 81% capacity. North Upper approaching critical levels — recommend redirecting to West Lower and Field Level sections. Concession areas experiencing normal halftime surge.`, success: true };
   }
   try {
-    const prompt = `Analyze this crowd data for a stadium and provide brief operational recommendations:\n${JSON.stringify(crowdData)}`;
+    const prompt = `Analyze this crowd data for ${venue.name} and provide brief operational recommendations:\n${JSON.stringify(crowdData)}`;
     const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.5, maxOutputTokens: 512 } }),
     });
-    if (!res.ok) return { text: 'Stadium at 81% capacity. North Upper approaching critical levels — recommend redirecting to West Lower and Field Level sections.', success: false };
+    if (!res.ok) return { text: `${venue.name} at 81% capacity. North Upper approaching critical levels — recommend redirecting to West Lower and Field Level sections.`, success: false };
     const data = await res.json();
     return { text: data.candidates?.[0]?.content?.parts?.[0]?.text || 'Analysis unavailable.', success: true };
   } catch { return { text: 'Analysis unavailable.', success: false }; }
@@ -198,11 +209,12 @@ export async function getCrowdAnalysis(crowdData) {
 
 /** Get emergency decision support from AI */
 export async function getEmergencyAdvice(incidentType, crowdDensity, location) {
+  const venue = getCurrentVenue();
   if (isDemoMode()) {
-    return { text: `For ${incidentType} at ${location}: Deploy nearest response team. Current density is ${crowdDensity}% — ${crowdDensity > 80 ? 'consider partial evacuation of adjacent sections' : 'standard protocol applies'}. Nearest medical: Section 112 First Aid. ETA: 3 min.`, success: true };
+    return { text: `For ${incidentType} at ${location}: Deploy nearest response team inside ${venue.name}. Current density is ${crowdDensity}% — ${crowdDensity > 80 ? 'consider partial evacuation of adjacent sections' : 'standard protocol applies'}. Nearest medical: Section 112 First Aid. ETA: 3 min.`, success: true };
   }
   try {
-    const prompt = `Emergency: ${incidentType} at ${location}. Crowd density: ${crowdDensity}%. Provide concise emergency response recommendations.`;
+    const prompt = `Emergency at ${venue.name}: ${incidentType} at ${location}. Crowd density: ${crowdDensity}%. Provide concise emergency response recommendations.`;
     const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -232,11 +244,12 @@ export async function translateText(text, targetLanguage) {
 
 /** Get AI sustainability tips */
 export async function getSustainabilityTips(metrics) {
+  const venue = getCurrentVenue();
   if (isDemoMode()) {
-    return { text: 'Reduce lighting in low-traffic sections by 20%. Redirect fans to water refill stations. Schedule early composting collection for Food Court B.', success: true };
+    return { text: `Reduce lighting in low-traffic sections of ${venue.name} by 20%. Redirect fans to water refill stations. Schedule early composting collection for Food Court B.`, success: true };
   }
   try {
-    const prompt = `Given these sustainability metrics for a stadium: ${JSON.stringify(metrics)}. Provide 3 brief actionable eco-recommendations.`;
+    const prompt = `Given these sustainability metrics for ${venue.name}: ${JSON.stringify(metrics)}. Provide 3 brief actionable eco-recommendations.`;
     const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
