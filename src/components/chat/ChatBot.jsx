@@ -46,11 +46,7 @@ export default function ChatBot() {
           <div className="chat-messages">
             {messages.map(m => <ChatMessage key={m.id} message={m} />)}
             {isLoading && (
-              <div className="chat-typing">
-                <div className="chat-typing-dot" />
-                <div className="chat-typing-dot" />
-                <div className="chat-typing-dot" />
-              </div>
+              <ChatMessage message={{ id: 'loading', sender: 'bot', text: '', isLoading: true, timestamp: new Date() }} />
             )}
             <div ref={endRef} />
           </div>
