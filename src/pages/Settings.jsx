@@ -108,8 +108,7 @@ export default function Settings() {
                   placeholder="Enter your Gemini API key..."
                 />
                 <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: 'var(--space-2)' }}>
-                  Get your API key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-primary-light)' }}>aistudio.google.com/apikey</a>.
-                  Without a key, the AI assistant and decision support tools run in fully-simulated Demo Mode.
+                  Enter your Google Gemini API key to authorize live AI assistant responses and real-time operational decision models.
                 </p>
               </div>
             </div>
