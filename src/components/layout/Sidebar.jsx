@@ -67,8 +67,8 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
         style={{
           transform: `scale(${scale})`,
           transition: mouseY === Infinity 
-            ? 'transform 0.38s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, border-color 0.2s' 
-            : 'transform 0.12s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s, border-color 0.2s',
+            ? 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, border-color 0.2s' 
+            : 'transform 0.16s cubic-bezier(0.1, 0.8, 0.25, 1), background-color 0.2s, border-color 0.2s',
           transformOrigin: collapsed ? 'center center' : 'left center',
           display: 'flex',
           alignItems: 'center',
@@ -78,7 +78,7 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
           width: collapsed ? '40px' : '100%',
           height: collapsed ? '40px' : 'auto',
           justifyContent: collapsed ? 'center' : 'flex-start',
-          margin: collapsed ? '6px auto' : '0',
+          margin: collapsed ? '12px auto' : '0',
           position: 'relative'
         }}
         onMouseEnter={() => setIsHovered(true)}

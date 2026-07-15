@@ -574,5 +574,11 @@ body {
   }
 }
 
+/* Prevent clipping of magnified circular items and right tooltips */
+.sidebar.collapsed,
+.sidebar.collapsed .sidebar-nav {
+  overflow: visible !important;
+}
+
 
 
