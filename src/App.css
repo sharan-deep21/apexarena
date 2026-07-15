@@ -47,7 +47,8 @@
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--space-4);margin-bottom:var(--space-6)}
 .stats-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:var(--space-5);position:relative;overflow:hidden;transition:all var(--transition-normal);animation:fadeInUp var(--transition-slow) forwards;opacity:0}
 .stats-card:nth-child(1){animation-delay:0ms}.stats-card:nth-child(2){animation-delay:80ms}.stats-card:nth-child(3){animation-delay:160ms}.stats-card:nth-child(4){animation-delay:240ms}.stats-card:nth-child(5){animation-delay:320ms}.stats-card:nth-child(6){animation-delay:400ms}
-.stats-card:hover{border-color:var(--accent-primary);box-shadow:var(--shadow-glow);transform:translateY(-2px)}
+.stats-card:hover{border-color:var(--accent-primary);box-shadow:var(--shadow-glow)}
+.stats-card:not(.interactive-card):hover{transform:translateY(-2px)}
 .stats-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent-primary),var(--accent-gold));opacity:0;transition:opacity var(--transition-fast)}
 .stats-card:hover::after{opacity:1}
 .stats-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3)}
@@ -145,7 +146,8 @@
 /* ── Sustainability ── */
 .sustainability-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-4)}
 .metric-ring-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:var(--space-5);display:flex;flex-direction:column;align-items:center;text-align:center;transition:all var(--transition-normal)}
-.metric-ring-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.metric-ring-card:hover{box-shadow:var(--shadow-md)}
+.metric-ring-card:not(.interactive-card):hover{transform:translateY(-2px)}
 .metric-ring{position:relative;width:120px;height:120px;margin-bottom:var(--space-3)}
 .metric-ring svg{transform:rotate(-90deg)}.metric-ring-bg{fill:none;stroke:var(--bg-tertiary);stroke-width:8}.metric-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
 .metric-ring-value{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-heading);font-size:var(--text-2xl);font-weight:700}
@@ -255,6 +257,8 @@ body {
 .card:hover {
   border-color: rgba(0, 242, 254, 0.3) !important;
   box-shadow: 0 16px 40px rgba(0, 242, 254, 0.08), 0 0 15px rgba(212, 175, 55, 0.05) !important;
+}
+.card:not(.interactive-card):hover {
   transform: translateY(-2px);
 }
 

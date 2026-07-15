@@ -240,35 +240,46 @@ export default function Navigation() {
 
         {/* Right panel */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          <InteractiveCard style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', padding: 'var(--space-4)', height: 'fit-content' }}>
+          <InteractiveCard style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', padding: 'var(--space-5)', height: 'fit-content' }}>
             {/* Search */}
-            <div className="nav-search-box" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
-              <Icon name="search" width="14" height="14" style={{ color: 'var(--text-muted)' }} />
-              <input type="text" placeholder="Search locations..." value={search} onChange={e => setSearch(e.target.value)} aria-label="Search locations" style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: 'var(--text-sm)', outline: 'none' }} />
-              {search && <button onClick={() => setSearch('')} style={{ color: 'var(--text-muted)', cursor: 'pointer', background: 'none', border: 'none', fontSize: '14px' }}>✕</button>}
+            <div>
+              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Search Locations</div>
+              <div className="nav-search-box" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
+                <Icon name="search" width="14" height="14" style={{ color: 'var(--text-muted)' }} />
+                <input type="text" placeholder="Search locations..." value={search} onChange={e => setSearch(e.target.value)} aria-label="Search locations" style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: 'var(--text-sm)', outline: 'none' }} />
+                {search && <button onClick={() => setSearch('')} style={{ color: 'var(--text-muted)', cursor: 'pointer', background: 'none', border: 'none', fontSize: '14px' }}>✕</button>}
+              </div>
             </div>
 
             {/* Filters */}
-            <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-              {FILTERS.map(f => (
-                <button key={f} onClick={() => setActiveFilter(f)} style={{
-                  padding: '4px 12px', borderRadius: '20px', fontSize: 'var(--text-xs)', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s',
-                  background: activeFilter === f ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
-                  color: activeFilter === f ? 'white' : 'var(--text-secondary)',
-                  border: `1px solid ${activeFilter === f ? 'var(--accent-primary)' : 'var(--border-color)'}`,
-                }}>{f}</button>
-              ))}
+            <div>
+              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Categories</div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {FILTERS.map(f => (
+                  <button key={f} onClick={() => setActiveFilter(f)} style={{
+                    padding: '6px 14px', borderRadius: '20px', fontSize: 'var(--text-xs)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
+                    background: activeFilter === f ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                    color: activeFilter === f ? 'white' : 'var(--text-secondary)',
+                    border: `1px solid ${activeFilter === f ? 'var(--accent-primary)' : 'var(--border-color)'}`,
+                  }}>{f}</button>
+                ))}
+              </div>
             </div>
 
             {/* From section input */}
-            <div style={{ padding: 'var(--space-2) var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700 }}>FROM:</span>
-              <input type="text" placeholder="Your section (e.g. Section 115)" value={fromSection} onChange={e => setFromSection(e.target.value)} style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: 'var(--text-xs)', outline: 'none' }} />
+            <div>
+              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>AI Route Planner</div>
+              <div style={{ padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700 }}>FROM:</span>
+                <input type="text" placeholder="Your section (e.g. Section 115)" value={fromSection} onChange={e => setFromSection(e.target.value)} style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: 'var(--text-xs)', outline: 'none' }} />
+              </div>
             </div>
 
             {/* POI List */}
-            <div style={{ flex: 1, overflowY: 'auto', maxHeight: showRoutePanel ? 200 : 320 }}>
-              {filtered.length === 0 && <div style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--text-muted)' }}><div style={{ fontSize: '24px' }}>🔍</div><div style={{ fontSize: 'var(--text-sm)', marginTop: 'var(--space-2)' }}>No locations found</div></div>}
+            <div>
+              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Points of Interest</div>
+              <div style={{ flex: 1, overflowY: 'auto', maxHeight: showRoutePanel ? 160 : 260 }}>
+                {filtered.length === 0 && <div style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--text-muted)' }}><div style={{ fontSize: '24px' }}>🔍</div><div style={{ fontSize: 'var(--text-sm)', marginTop: 'var(--space-2)' }}>No locations found</div></div>}
               {filtered.map(p => (
                 <div key={p.id} onClick={() => setSelectedPoi(p)} style={{
                   display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-2) var(--space-3)',
@@ -290,7 +301,8 @@ export default function Navigation() {
                 </div>
               ))}
             </div>
-          </InteractiveCard>
+          </div>
+        </InteractiveCard>
 
           {/* Selected POI detail */}
           {selectedPoi && (
