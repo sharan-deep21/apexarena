@@ -39,7 +39,6 @@ export default function Settings() {
 
   const tabs = [
     { id: 'general', label: 'General Settings', iconName: 'settings' },
-    { id: 'api', label: 'API Configuration', iconName: 'lock' },
     { id: 'notifications', label: 'Notifications', iconName: 'bell' },
     { id: 'language', label: 'Language', iconName: 'sustainability' }
   ];
@@ -93,26 +92,7 @@ export default function Settings() {
             </div>
           )}
 
-          {activeTab === 'api' && (
-            <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
-              <div className="settings-section-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: 'var(--text-lg)', marginBottom: 'var(--space-4)' }}>
-                <Icon name="lock" style={{ color: 'var(--accent-warning)' }} /> API Configuration
-              </div>
-              <div className="settings-field">
-                <label className="settings-label">Google Gemini API Key</label>
-                <input
-                  className="settings-input"
-                  type="password"
-                  value={apiKey}
-                  onChange={e => setApiKeyState(e.target.value)}
-                  placeholder="Enter your Gemini API key..."
-                />
-                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: 'var(--space-2)' }}>
-                  Enter your Google Gemini API key to authorize live AI assistant responses and real-time operational decision models.
-                </p>
-              </div>
-            </div>
-          )}
+
 
           {activeTab === 'notifications' && (
             <div style={{ animation: 'fadeIn 0.2s ease-out' }}>
