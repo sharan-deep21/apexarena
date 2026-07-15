@@ -2,7 +2,7 @@ import { useRealTimeData } from '../hooks/useRealTimeData';
 import { useCrowdData } from '../hooks/useCrowdData';
 import { formatNumber, formatPercent, getCapacityLevel } from '../utils/formatters';
 import StatusBadge from '../components/common/StatusBadge';
-import AnimatedCounter from '../components/common/AnimatedCounter';
+import GooeyValue from '../components/common/GooeyValue';
 import CrowdHeatmap from '../components/dashboard/CrowdHeatmap';
 import Icon from '../components/common/Icon';
 import InteractiveCard from '../components/common/InteractiveCard';
@@ -136,9 +136,11 @@ function StatsCard({ label, value, iconName, colorClass, delay }) {
           <Icon name={iconName} />
         </div>
       </div>
-      <div className="stats-card-value">
-        {typeof value === 'number' ? <AnimatedCounter value={value} /> : value}
-      </div>
+        {typeof value === 'number' ? (
+          <GooeyValue value={new Intl.NumberFormat().format(value)} />
+        ) : (
+          <GooeyValue value={value} />
+        )}
     </InteractiveCard>
   );
 }

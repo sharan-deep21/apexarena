@@ -1,4 +1,4 @@
-import AnimatedCounter from '../common/AnimatedCounter';
+import GooeyValue from '../common/GooeyValue';
 import Icon from '../common/Icon';
 import InteractiveCard from '../common/InteractiveCard';
 
@@ -20,7 +20,11 @@ export default function StatsCard({ label, value, iconName, trend, colorClass = 
         </div>
       </div>
       <div className="stats-card-value">
-        {typeof value === 'number' ? <AnimatedCounter value={value} /> : value}
+        {typeof value === 'number' ? (
+          <GooeyValue value={new Intl.NumberFormat().format(value)} />
+        ) : (
+          <GooeyValue value={value} />
+        )}
       </div>
       {trend && <div className={`stats-card-trend ${trendClass}`}>{trendArrow} {trend.value}</div>}
       <div className="stats-card-sparkline">

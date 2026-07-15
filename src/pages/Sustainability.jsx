@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRealTimeData } from '../hooks/useRealTimeData';
 import ProgressRing from '../components/common/ProgressRing';
-import AnimatedCounter from '../components/common/AnimatedCounter';
+import GooeyValue from '../components/common/GooeyValue';
 import { getSustainabilityTips } from '../services/geminiService';
 import Icon from '../components/common/Icon';
 import InteractiveCard from '../components/common/InteractiveCard';
@@ -112,9 +112,7 @@ export default function Sustainability() {
           </div>
           <div className="card-body">
             <div style={{ textAlign: 'center', marginBottom: 'var(--space-4)' }}>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'var(--text-4xl)', fontWeight: 700, color: 'var(--accent-warning)' }}>
-                <AnimatedCounter value={m.energyUsage} suffix=" kWh" />
-              </div>
+                <GooeyValue value={new Intl.NumberFormat().format(m.energyUsage) + " kWh"} />
               <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-muted)' }}>Current consumption</div>
             </div>
             {[
