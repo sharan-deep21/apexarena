@@ -9,6 +9,21 @@ export default function Layout() {
   const title = PAGE_TITLES[location.pathname] || 'StadiumAI';
   return (
     <div className="app-layout">
+      {/* Global SVG threshold filter for gooey text transitions */}
+      <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="gooey-threshold">
+            <feColorMatrix
+              in="SourceGraphic"
+              type="matrix"
+              values="1 0 0 0 0
+                      0 1 0 0 0
+                      0 0 1 0 0
+                      0 0 0 20 -8"
+            />
+          </filter>
+        </defs>
+      </svg>
       <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} alertCount={3} />
       <main className={`app-main ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         <Header title={title} sidebarCollapsed={sidebarCollapsed} />

@@ -67,20 +67,7 @@ export default function GooeyValue({ value, morphTime = 0.6, className = "", tex
 
   return (
     <div style={{ position: 'relative', display: 'inline-block', minHeight: '1.2em', verticalAlign: 'middle' }} className={className}>
-      <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true" focusable="false">
-        <defs>
-          <filter id="gooey-threshold">
-            <feColorMatrix
-              in="SourceGraphic"
-              type="matrix"
-              values="1 0 0 0 0
-                      0 1 0 0 0
-                      0 0 1 0 0
-                      0 0 0 20 -8"
-            />
-          </filter>
-        </defs>
-      </svg>
+
 
       <div
         style={{
