@@ -5,7 +5,7 @@ import Icon from '../common/Icon';
 const NAV_ITEMS = [
   { 
     section: 'OVERVIEW', 
-    items: [{ path: '/', iconName: 'dashboard', label: 'Dashboard' }] 
+    items: [{ path: '/dashboard', iconName: 'dashboard', label: 'Dashboard' }] 
   },
   { 
     section: 'OPERATIONS', 
@@ -64,7 +64,7 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
       <NavLink 
         ref={ref}
         to={item.path} 
-        end={item.path === '/'} 
+        end={item.path === '/dashboard'} 
         className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''} ${collapsed ? 'collapsed-dock-item' : ''}`}
         style={{
           transform: `scale(${scale})`,

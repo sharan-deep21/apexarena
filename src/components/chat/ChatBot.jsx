@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 import ChatMessage from './ChatMessage';
 import QuickActions from './QuickActions';
@@ -9,6 +10,9 @@ export default function ChatBot() {
   const [input, setInput] = useState('');
   const { messages, isLoading, sendMessage } = useChat();
   const endRef = useRef(null);
+  const location = useLocation();
+
+  if (location.pathname === '/') return null;
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });

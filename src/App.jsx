@@ -9,13 +9,15 @@ import Transport from './pages/Transport';
 import Emergency from './pages/Emergency';
 import Sustainability from './pages/Sustainability';
 import Settings from './pages/Settings';
+import Landing from './pages/Landing';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route element={<Layout />}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/crowd" element={<CrowdManagement />} />
           <Route path="/navigation" element={<Navigation />} />
           <Route path="/transport" element={<Transport />} />
