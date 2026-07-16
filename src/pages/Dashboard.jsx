@@ -71,7 +71,7 @@ export default function Dashboard() {
                   <div style={{ fontSize: '32px' }}>{matchInfo.homeFlag}</div>
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'var(--text-lg)', fontWeight: 600 }}>{matchInfo.homeTeam}</div>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-5xl)', fontWeight: 700 }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-5xl)', fontWeight: 700, whiteSpace: 'nowrap' }}>
                   {matchInfo.homeScore} - {matchInfo.awayScore}
                 </div>
                 <div style={{ textAlign: 'center' }}>
