@@ -12,8 +12,6 @@ export default function ChatBot() {
   const endRef = useRef(null);
   const location = useLocation();
 
-  if (location.pathname === '/') return null;
-
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length, isLoading]);
@@ -30,6 +28,8 @@ export default function ChatBot() {
       handleSend();
     }
   };
+
+  if (location.pathname === '/') return null;
 
   return (
     <>
