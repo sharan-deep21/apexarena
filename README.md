@@ -66,7 +66,7 @@ ApexArena leverages **Google Gemini 2.0 Flash** for core cognitive features:
 ## 📂 Project Structure
 
 ```
-stadiumai/
+apexarena/
 ├── index.html              # Entry HTML with SEO meta tags
 ├── vite.config.js          # Vite + React configuration
 ├── package.json            # Dependencies and scripts
@@ -119,8 +119,8 @@ stadiumai/
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/stadiumai.git
-cd stadiumai
+git clone https://github.com/YOUR_USERNAME/apexarena.git
+cd apexarena
 
 # Install dependencies
 npm install --legacy-peer-deps
@@ -146,12 +146,10 @@ npm run preview
 
 ## 🔑 API Configuration
 
-StadiumAI uses the **Google Gemini API** for its AI features. You have two options:
+ApexArena uses the **Google Gemini API** for its AI features. You have two options:
 
 1. **Demo Mode** (default): Works immediately with no API key. Pre-built responses simulate AI behavior.
-2. **Live AI Mode**: Add your Gemini API key via:
-   - Settings page → API Configuration
-   - Or set `VITE_GEMINI_API_KEY` in your `.env` file
+2. **Live AI Mode**: Set your Gemini API key as `VITE_GEMINI_API_KEY` in your `.env` file for secure execution.
 
 Get your free API key at: [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
 
