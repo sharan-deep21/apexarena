@@ -85,24 +85,144 @@ const GREETING_RESPONSES = (venueName) => [
 // Keyword mapping: keyword → response key
 const KEYWORD_MAP = [
   // Specific domains first
-  { keys: ['seat', 'section', 'ticket', 'row', 'gate', 'entrance', 'entry', 'enter'], response: 'seat' },
-  { keys: ['food', 'eat', 'hungry', 'lunch', 'dinner', 'snack', 'burger', 'pizza', 'taco', 'sushi', 'halal', 'vegan', 'vegetarian', 'gluten', 'restaurant', 'menu', 'concession', 'beer', 'drink', 'bar', 'coffee', 'beverage'], response: 'food' },
-  { keys: ['restroom', 'bathroom', 'washroom', 'toilet', 'wc', 'loo', 'lavatory', 'pee', 'urgently', 'baby change', 'changing station', 'diaper'], response: 'restroom' },
-  { keys: ['wheelchair', 'accessible', 'disability', 'disabled', 'ramp', 'elevator', 'lift', 'hearing', 'blind', 'visual', 'sensory', 'service animal', 'sign language'], response: 'accessibility' },
-  { keys: ['park', 'car', 'drive', 'uber', 'lyft', 'taxi', 'cab', 'rideshare', 'ride share', 'bus', 'train', 'transit', 'subway', 'shuttle', 'transport', 'traffic', 'commute', 'lot a', 'lot b', 'lot c', 'lot d'], response: 'parking' },
-  { keys: ['emergency', 'help', 'danger', 'fire', 'evacuate', 'evacuation', 'security', 'police', 'fight', 'threat', 'suspicious', 'alarm', 'unsafe', 'report', 'issue', 'problem', 'complaint'], response: 'emergency' },
-  { keys: ['score', 'match', 'game', 'goal', 'result', 'who is winning', 'who scored', 'brazil', 'germany', 'half time', 'halftime', 'red card', 'yellow card', 'penalty', 'kickoff', 'kick off', 'lineup'], response: 'match' },
-  { keys: ['weather', 'climate', 'rain', 'temperature', 'temp', 'hot', 'cold', 'sun', 'wind', 'forecast', 'umbrella', 'sunscreen', 'jacket', 'conditions', 'forecasts'], response: 'weather' },
-  { keys: ['wifi', 'wi-fi', 'internet', 'charge', 'charging', 'battery', 'phone', 'plug', 'outlet', 'usb', 'signal', 'connection', 'data'], response: 'wifi' },
-  { keys: ['kid', 'child', 'children', 'baby', 'family', 'infant', 'toddler', 'stroller', 'pram', 'play area', 'face paint', 'ear protection'], response: 'kids' },
-  { keys: ['shop', 'store', 'merch', 'merchandise', 'jersey', 'shirt', 'souvenir', 'buy', 'purchase', 'gift', 'scarf', 'hat', 'cap', 'ball', 'flag'], response: 'merch' },
-  { keys: ['water', 'hydrat', 'thirsty', 'refill', 'bottle', 'fountain', 'tap water'], response: 'water' },
-  { keys: ['schedule', 'fixture', 'next match', 'upcoming', 'final', 'semi', 'what time', 'when is', 'calendar', 'dates'], response: 'schedule' },
-  { keys: ['lost', 'found', 'missing', 'forgot', 'left behind', 'lost and found', 'misplaced', 'stolen'], response: 'lost' },
-  { keys: ['medical', 'first aid', 'doctor', 'nurse', 'injury', 'injured', 'hurt', 'sick', 'ill', 'faint', 'dizzy', 'ambulance', 'hospital', 'medicine', 'allergy', 'allergic', 'epipen', 'defibrillator', 'aed', 'health'], response: 'medical' },
+  { 
+    keys: [
+      'seat', 'seats', 'seating', 'section', 'sections', 'ticket', 'tickets', 'row', 'rows', 
+      'gate', 'gates', 'entrance', 'entrances', 'entry', 'enter', 'entering', 'level', 'levels', 
+      'concourse', 'where to scan', 'scan', 'admit', 'admission'
+    ], 
+    response: 'seat' 
+  },
+  { 
+    keys: [
+      'food', 'foods', 'eat', 'eating', 'hungry', 'lunch', 'dinner', 'snack', 'snacks', 
+      'burger', 'burgers', 'pizza', 'pizzas', 'taco', 'tacos', 'sushi', 'halal', 'vegan', 
+      'vegetarian', 'veg', 'gluten', 'gf', 'restaurant', 'restaurants', 'menu', 'menus', 
+      'concession', 'concessions', 'beer', 'beers', 'drink', 'drinks', 'bar', 'bars', 
+      'coffee', 'beverage', 'beverages', 'soda', 'coke', 'pepsi', 'juice', 'concessions'
+    ], 
+    response: 'food' 
+  },
+  { 
+    keys: [
+      'restroom', 'restrooms', 'bathroom', 'bathrooms', 'washroom', 'washrooms', 'toilet', 
+      'toilets', 'wc', 'loo', 'lavatory', 'pee', 'poop', 'baby change', 'changing station', 
+      'changing stations', 'diaper', 'diapers', 'mens room', 'ladies room', 'urinal'
+    ], 
+    response: 'restroom' 
+  },
+  { 
+    keys: [
+      'wheelchair', 'accessible', 'accessibility', 'disability', 'disabled', 'ramp', 'ramps', 
+      'elevator', 'elevators', 'lift', 'lifts', 'hearing', 'deaf', 'blind', 'visual', 
+      'sensory', 'service animal', 'dog', 'sign language', 'asl', 'interpreter', 'assistive'
+    ], 
+    response: 'accessibility' 
+  },
+  { 
+    keys: [
+      'park', 'parking', 'spots', 'car', 'cars', 'drive', 'driving', 'uber', 'lyft', 
+      'taxi', 'taxis', 'cab', 'cabs', 'rideshare', 'ride share', 'bus', 'busses', 
+      'train', 'trains', 'transit', 'subway', 'subways', 'shuttle', 'shuttles', 
+      'transport', 'transportation', 'traffic', 'commute', 'lot', 'lots'
+    ], 
+    response: 'parking' 
+  },
+  { 
+    keys: [
+      'emergency', 'emergencies', 'help', 'danger', 'dangerous', 'fire', 'smoke', 
+      'evacuate', 'evacuation', 'security', 'police', 'cop', 'cops', 'guard', 'guards', 
+      'fight', 'fighting', 'threat', 'suspicious', 'alarm', 'alarms', 'unsafe', 
+      'report', 'issue', 'problem', 'complaint', 'incident', 'incidents'
+    ], 
+    response: 'emergency' 
+  },
+  { 
+    keys: [
+      'score', 'scores', 'match', 'matches', 'game', 'games', 'play', 'playing', 
+      'goal', 'goals', 'result', 'results', 'who is winning', 'who scored', 
+      'brazil', 'germany', 'half time', 'halftime', 'red card', 'yellow card', 
+      'penalty', 'kickoff', 'kick off', 'lineup', 'lineups', 'versus', 'vs', 
+      'minutes', 'minute'
+    ], 
+    response: 'match' 
+  },
+  { 
+    keys: [
+      'weather', 'climate', 'rain', 'raining', 'rainy', 'temp', 'temperature', 
+      'hot', 'cold', 'sun', 'sunny', 'wind', 'windy', 'forecast', 'forecasts', 
+      'umbrella', 'sunscreen', 'jacket', 'conditions', 'degrees', 'degree', 
+      'degree C', 'degree F'
+    ], 
+    response: 'weather' 
+  },
+  { 
+    keys: [
+      'wifi', 'wi-fi', 'internet', 'network', 'charge', 'charging', 'battery', 
+      'phone', 'phones', 'plug', 'plugging', 'outlet', 'outlets', 'usb', 
+      'signal', 'reception', 'connection', 'connect', 'data'
+    ], 
+    response: 'wifi' 
+  },
+  { 
+    keys: [
+      'kid', 'kids', 'child', 'children', 'baby', 'babies', 'family', 'families', 
+      'infant', 'toddlers', 'toddler', 'stroller', 'strollers', 'pram', 
+      'play area', 'face paint', 'ear protection', 'sensory room'
+    ], 
+    response: 'kids' 
+  },
+  { 
+    keys: [
+      'shop', 'shopping', 'store', 'stores', 'merch', 'merchandise', 'jersey', 
+      'jerseys', 'shirt', 'shirts', 'souvenir', 'souvenirs', 'buy', 'purchase', 
+      'gift', 'gifts', 'scarf', 'scarves', 'hat', 'hats', 'cap', 'caps', 
+      'ball', 'balls', 'flag', 'flags'
+    ], 
+    response: 'merch' 
+  },
+  { 
+    keys: [
+      'water', 'hydrat', 'thirsty', 'refill', 'bottle', 'fountain', 'tap water', 
+      'drink water', 'hydrated'
+    ], 
+    response: 'water' 
+  },
+  { 
+    keys: [
+      'schedule', 'fixture', 'next match', 'upcoming', 'final', 'semi', 
+      'what time', 'when is', 'calendar', 'dates', 'when do play'
+    ], 
+    response: 'schedule' 
+  },
+  { 
+    keys: [
+      'lost', 'found', 'missing', 'forgot', 'left behind', 'lost and found', 
+      'misplaced', 'stolen', 'retrieve', 'wallet', 'phone lost', 'lost item'
+    ], 
+    response: 'lost' 
+  },
+  { 
+    keys: [
+      'medical', 'first aid', 'doctor', 'doctors', 'nurse', 'nurses', 'injury', 
+      'injuries', 'injured', 'hurt', 'pain', 'sick', 'illness', 'ill', 'faint', 
+      'fainted', 'faints', 'dizzy', 'ambulance', 'hospital', 'medicine', 
+      'allergy', 'allergic', 'epipen', 'defibrillator', 'aed', 'health', 
+      'heart attack', 'cpr'
+    ], 
+    response: 'medical' 
+  },
   
   // Generic question/nav helpers at the bottom
-  { keys: ['direction', 'where', 'how to get', 'navigate', 'find', 'map', 'way to', 'route', 'walk', 'go to', 'get to', 'closest', 'nearest', 'location', 'located'], response: 'directions' },
+  { 
+    keys: [
+      'direction', 'directions', 'where', 'how to get', 'navigate', 'navigation', 
+      'find', 'map', 'maps', 'way to', 'route', 'routes', 'walk', 'walking', 
+      'go to', 'get to', 'closest', 'nearest', 'location', 'located', 'loop', 
+      'landmark', 'landmarks'
+    ], 
+    response: 'directions' 
+  },
 ];
 
 function formatTelemetryContext(context) {
