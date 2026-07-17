@@ -105,10 +105,90 @@ const KEYWORD_MAP = [
   { keys: ['direction', 'where', 'how to get', 'navigate', 'find', 'map', 'way to', 'route', 'walk', 'go to', 'get to', 'closest', 'nearest', 'location', 'located'], response: 'directions' },
 ];
 
+function formatTelemetryContext(context) {
+  if (!context || Object.keys(context).length === 0) return '';
+  
+  let lines = ['\n\n=== REAL-TIME OPERATIONS TELEMETRY ==='];
+  
+  if (context.matchInfo) {
+    const m = context.matchInfo;
+    lines.push(`LIVE MATCH: ${m.homeFlag} ${m.homeTeam} vs ${m.awayTeam} ${m.awayFlag} (${m.homeScore} - ${m.awayScore})`);
+    lines.push(`ELAPSED: ${m.minute}' (${m.status})`);
+  }
+  
+  if (context.stats) {
+    const s = context.stats;
+    lines.push(`ATTENDANCE: ${s.attendance?.toLocaleString()} fans (${s.capacityPercent}% capacity)`);
+    lines.push(`WAIT TIME: avg ${s.avgWaitTime}`);
+  }
+  
+  if (context.weather) {
+    const w = context.weather;
+    lines.push(`WEATHER: ${w.temp}°F, ${w.condition}, Wind ${w.wind}, Humidity ${w.humidity}`);
+  }
+  
+  if (context.alerts && context.alerts.length > 0) {
+    lines.push('ACTIVE ALERTS & WARNINGS:');
+    context.alerts.forEach(a => {
+      lines.push(`- [${a.severity.toUpperCase()}] ${a.title} at ${a.location}: ${a.message}`);
+    });
+  } else {
+    lines.push('ACTIVE ALERTS & WARNINGS: None (All Clear)');
+  }
+  
+  if (context.crowdData && context.crowdData.length > 0) {
+    lines.push('CONCOURSE ZONE OCCUPANCIES:');
+    context.crowdData.forEach(z => {
+      const pct = Math.round((z.current / z.capacity) * 100);
+      lines.push(`- ${z.name}: ${z.current.toLocaleString()} / ${z.capacity.toLocaleString()} (${pct}% capacity - Trend: ${z.trend})`);
+    });
+  }
+  
+  lines.push('=====================================');
+  return lines.join('\n');
+}
+
 /** Find a matching demo response */
-function getDemoResponse(message) {
+function getDemoResponse(message, context = {}) {
   const venue = getCurrentVenue();
   const lower = message.toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
+
+  // 1. Dynamic Check for Active Emergency Warnings/Alerts
+  if (lower.includes('alert') || lower.includes('warning') || lower.includes('incident') || lower.includes('emergency') || lower.includes('danger') || lower.includes('threat') || lower.includes('police') || lower.includes('fire')) {
+    if (context.alerts && context.alerts.length > 0) {
+      const alertList = context.alerts.map(a => `🚨 **[${a.severity.toUpperCase()}] ${a.title}** at **${a.location}**\n*Details:* ${a.message}`).join('\n\n');
+      return `⚠️ **Active Operations Alerts:**\n\nThere are ongoing incidents requiring active containment:\n\n${alertList}\n\n💡 **Advisory:** Deploy security response teams to affected zones immediately.`;
+    }
+    return `✅ **Operations Status:**\n\nAll clear! There are currently no active warnings or emergency incidents logged in the stadium concourses.`;
+  }
+
+  // 2. Dynamic Check for Crowd Density & Congested Zones
+  if (lower.includes('crowd') || lower.includes('congest') || lower.includes('busy') || lower.includes('full') || lower.includes('density')) {
+    if (context.crowdData && context.crowdData.length > 0) {
+      const criticalZones = context.crowdData.filter(z => (z.current / z.capacity) * 100 >= 80);
+      const avgOcc = context.stats?.capacityPercent || 81;
+      if (criticalZones.length > 0) {
+        return `👥 **Crowd Density Analysis:**\n\nThe average occupancy is **${avgOcc}%**. The following zones have reached heavy congestion limits:\n\n${criticalZones.map(z => `- **${z.name}**: ${Math.round((z.current/z.capacity)*100)}% capacity (${z.current.toLocaleString()} fans)`).join('\n')}\n\n💡 **Advisory:** Divert incoming spectator flows to adjacent lower-density gates or concourse loops.`;
+      }
+      return `👥 **Crowd Flow Status:**\n\nTotal occupancy is stable at **${avgOcc}%** with normal flow. No zones are reporting capacity blockages.`;
+    }
+  }
+
+  // 3. Dynamic Check for Score/Live Match Stats
+  if (lower.includes('score') || lower.includes('goal') || lower.includes('winning') || lower.includes('score') || lower.includes('who scored') || lower.includes('minute') || lower.includes('match') || lower.includes('game') || lower.includes('brazil') || lower.includes('germany')) {
+    if (context.matchInfo) {
+      const m = context.matchInfo;
+      return `⚽ **Live Match Status Update:**\n\n**${m.homeFlag} ${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam} ${m.awayFlag}**\n⏱️ ${m.minute}' • ${m.status}\n🏟️ Venue: ${m.venue}\n\nAll gates and amenities are adjusted for live crowd movements.`;
+    }
+  }
+
+  // 4. Dynamic Check for Weather Condition
+  if (lower.includes('weather') || lower.includes('temp') || lower.includes('rain') || lower.includes('cloud') || lower.includes('wind')) {
+    if (context.weather) {
+      const w = context.weather;
+      return `🌤️ **Current Weather Report:**\n\nTemperature is **${w.temp}°F** (${w.condition}).\n- 💧 Humidity: ${w.humidity}\n- 💨 Wind: ${w.wind}\n\nPerfect match-day conditions. No delays anticipated!`;
+    }
+  }
 
   // Direct checks for common queries to ensure "natural answers"
   if (lower.includes('name') && (lower.includes('stadium') || lower.includes('venue') || lower.includes('place'))) {
@@ -139,7 +219,6 @@ function getDemoResponse(message) {
       const regex = new RegExp(`\\b${escaped}\\b`, 'i');
       if (regex.test(lower)) {
         const baseResponse = DEMO_RESPONSES[group.response];
-        // Replace MetLife references in static demo responses with the current venue name
         return baseResponse.replaceAll('MetLife Stadium', venue.name).replaceAll('MetLife', venue.name);
       }
     }
@@ -169,10 +248,11 @@ function isDemoMode() {
 export async function sendChatMessage(message, context = {}, language = 'en') {
   if (isDemoMode()) {
     await new Promise(r => setTimeout(r, 800 + Math.random() * 700));
-    return { text: getDemoResponse(message), success: true };
+    return { text: getDemoResponse(message, context), success: true };
   }
   try {
-    const systemPrompt = getSystemPrompt();
+    const telemetryContext = formatTelemetryContext(context);
+    const systemPrompt = getSystemPrompt() + telemetryContext;
     const langInstruction = language !== 'en' ? `\n\nIMPORTANT: Respond in the language with code "${language}".` : '';
     const venue = getCurrentVenue();
     const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
@@ -181,7 +261,7 @@ export async function sendChatMessage(message, context = {}, language = 'en') {
       body: JSON.stringify({
         contents: [
           { role: 'user', parts: [{ text: systemPrompt + langInstruction }] },
-          { role: 'model', parts: [{ text: `Understood! I am ApexArena, ready to assist at ${venue.name} for FIFA World Cup 2026.` }] },
+          { role: 'model', parts: [{ text: `Understood! I am ApexArena, the smart stadium Operations AI. I see the live metrics and am ready to support fans and command operators at ${venue.name}.` }] },
           { role: 'user', parts: [{ text: message }] },
         ],
         generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
@@ -189,18 +269,18 @@ export async function sendChatMessage(message, context = {}, language = 'en') {
     });
     if (!res.ok) {
       console.warn('Gemini API HTTP error:', res.status, '— falling back to demo mode');
-      return { text: getDemoResponse(message), success: false };
+      return { text: getDemoResponse(message, context), success: false };
     }
     const data = await res.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) {
       console.warn('Gemini API returned no candidates — falling back to demo mode');
-      return { text: getDemoResponse(message), success: false };
+      return { text: getDemoResponse(message, context), success: false };
     }
     return { text, success: true };
   } catch (error) {
     console.error('Gemini API error:', error);
-    return { text: getDemoResponse(message), success: false };
+    return { text: getDemoResponse(message, context), success: false };
   }
 }
 

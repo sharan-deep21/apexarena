@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import InteractiveCard from '../components/common/InteractiveCard';
+import TriondaMetaBalls from '../components/common/TriondaMetaBalls';
+import LightRays from '../components/common/LightRays';
+import RevealButton from '../components/common/RevealButton';
 
 export default function Landing() {
   const [isEntering, setIsEntering] = useState(false);
@@ -16,76 +18,60 @@ export default function Landing() {
 
   return (
     <div className={`landing-container ${isEntering ? 'warp-out' : ''}`}>
-      {/* Immersive cyber grid background */}
-      <div className="landing-grid-overlay" />
-      
-      {/* Animated glowing plasma orbs */}
-      <div className="landing-glow-orb orb-1" />
-      <div className="landing-glow-orb orb-2" />
-
-      {/* Cybernetic HUD layout */}
-      <div className="landing-hud-header">
-        <span className="hud-tag">SYSTEM: OK</span>
-        <span className="hud-divider">//</span>
-        <span className="hud-tag">SECURE CONNECTION: ESTABLISHED</span>
-        <span className="hud-divider">//</span>
-        <span className="hud-tag">FIFA WC 2026</span>
+      {/* Volumetric Light Rays background shimmer */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', zIndex: 2, pointerEvents: 'none', opacity: 0.85 }}>
+        <LightRays
+          raysOrigin="top-center"
+          raysColor="#ffffff"
+          raysSpeed={1}
+          lightSpread={0.5}
+          rayLength={3}
+          followMouse={true}
+          mouseInfluence={0.1}
+          noiseAmount={0}
+          distortion={0}
+          pulsating={false}
+          fadeDistance={1}
+          saturation={1}
+        />
       </div>
+      
+      {/* 3D WebGL FIFA Trionda Interactive MetaBalls */}
+      <TriondaMetaBalls />
+
+
 
       <div className="landing-hud-footer">
         <span>© 2026 APEXARENA INC. ALL RIGHTS RESERVED.</span>
         <span>LATENCY: 4.2ms</span>
       </div>
 
-      <div className="landing-content">
-        <InteractiveCard className="landing-card" tiltEnabled={true}>
-          <div className="landing-card-glow" />
-          
-          <div className="landing-header">
-            <div className="landing-logo-icon">🏟️</div>
-            <h1 className="landing-title">
-              APEX<span>ARENA</span>
-            </h1>
-            <p className="landing-subtitle">
-              GenAI-Powered Smart Venue Command & Control
-            </p>
-            <div className="landing-decorator">
-              <span className="dot dot-1" />
-              <span className="line" />
-              <span className="dot dot-2" />
-            </div>
+      {/* Minimalistic layout: Title at top, Ball in center, Button at bottom */}
+      <div className="landing-minimal-content">
+        <div className="landing-logo-container">
+          <h1 className="landing-title">
+            APEX<span>ARENA</span>
+          </h1>
+          <p className="landing-subtitle">
+            GenAI-Powered Smart Venue Command & Control
+          </p>
+          <div className="landing-decorator">
+            <span className="dot dot-1" />
+            <span className="line" />
+            <span className="dot dot-2" />
           </div>
+        </div>
 
-          <div className="landing-status">
-            <div className="status-row">
-              <span className="status-label">OPERATIONS HUB:</span>
-              <span className="status-value active">ONLINE</span>
-            </div>
-            <div className="status-row">
-              <span className="status-label">DATA STREAM:</span>
-              <span className="status-value active">REAL-TIME TELEMETRY</span>
-            </div>
-            <div className="status-row">
-              <span className="status-label">AI ENGINE:</span>
-              <span className="status-value active">GEMINI 2.0 FLASH</span>
-            </div>
-          </div>
-
-          <div style={{ marginTop: 'var(--space-6)', display: 'flex', justifyContent: 'center' }}>
-            <button 
-              className="landing-enter-btn" 
-              onClick={handleEnter}
-              disabled={isEntering}
-              aria-label="Enter Operations Terminal"
-            >
-              <span className="btn-glow-border" />
-              <span className="btn-text">
-                {isEntering ? 'INITIALIZING...' : 'ENTER OPERATIONS CENTER'}
-              </span>
-            </button>
-          </div>
-        </InteractiveCard>
+        <div className="landing-enter-container">
+          <RevealButton 
+            onClick={handleEnter}
+            className={isEntering ? 'loading' : ''}
+          >
+            {isEntering ? 'INITIALIZING...' : 'ENTER OPERATIONS CENTER'}
+          </RevealButton>
+        </div>
       </div>
     </div>
   );
 }
+

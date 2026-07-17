@@ -23,16 +23,16 @@ export default function Dashboard() {
       </div>
       
       <div className="stats-grid">
-        <StatsCard label="Total Attendance" value={stats.attendance} iconName="crowd" colorClass="blue" trend={{ value: '+2.1% vs yesterday', direction: 'up' }} delay={0} />
-        <StatsCard label="Stadium Capacity" value={stats.capacityPercent} iconName="dashboard" colorClass="green" trend={{ value: `${stats.capacityPercent}%`, direction: stats.capacityPercent > 80 ? 'up' : 'neutral' }} delay={80} />
-        <StatsCard label="Active Alerts" value={stats.activeAlerts} iconName="alertTriangle" colorClass="red" trend={{ value: stats.activeAlerts > 2 ? 'Needs attention' : 'Normal', direction: stats.activeAlerts > 2 ? 'up' : 'neutral' }} delay={160} />
-        <StatsCard label="Avg Wait Time" value={stats.avgWaitTime} iconName="settings" colorClass="amber" trend={{ value: '-12% from peak', direction: 'down' }} delay={240} />
-        <StatsCard label="Sustainability" value={stats.sustainabilityScore} iconName="leaf" colorClass="gold" trend={{ value: 'Above target', direction: 'up' }} delay={320} />
-        <StatsCard label="Transit Load" value={stats.transitLoad} iconName="bus" colorClass="info" trend={{ value: `${stats.transitLoad}% utilized`, direction: 'neutral' }} delay={400} />
+        <StatsCard label="Total Attendance" value={stats.attendance} iconName="crowd" colorClass="blue" trend={{ value: '+2.1% vs yesterday', direction: 'up' }} delay={0} className="fly-in-top-left" />
+        <StatsCard label="Stadium Capacity" value={stats.capacityPercent} iconName="dashboard" colorClass="green" trend={{ value: `${stats.capacityPercent}%`, direction: stats.capacityPercent > 80 ? 'up' : 'neutral' }} delay={80} className="fly-in-top" />
+        <StatsCard label="Active Alerts" value={stats.activeAlerts} iconName="alertTriangle" colorClass="red" trend={{ value: stats.activeAlerts > 2 ? 'Needs attention' : 'Normal', direction: stats.activeAlerts > 2 ? 'up' : 'neutral' }} delay={160} className="fly-in-top" />
+        <StatsCard label="Avg Wait Time" value={stats.avgWaitTime} iconName="settings" colorClass="amber" trend={{ value: '-12% from peak', direction: 'down' }} delay={240} className="fly-in-top" />
+        <StatsCard label="Sustainability" value={stats.sustainabilityScore} iconName="leaf" colorClass="gold" trend={{ value: 'Above target', direction: 'up' }} delay={320} className="fly-in-top" />
+        <StatsCard label="Transit Load" value={stats.transitLoad} iconName="bus" colorClass="info" trend={{ value: `${stats.transitLoad}% utilized`, direction: 'neutral' }} delay={400} className="fly-in-top-right" />
       </div>
 
       <div className="dashboard-grid">
-        <InteractiveCard>
+        <InteractiveCard className="fly-in-bottom-left" style={{ animationDelay: '100ms' }}>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="navigation" style={{ color: 'var(--accent-primary-light)' }} /> Crowd Density Heatmap
@@ -44,7 +44,7 @@ export default function Dashboard() {
           </div>
         </InteractiveCard>
 
-        <InteractiveCard>
+        <InteractiveCard className="fly-in-bottom-right" style={{ animationDelay: '180ms' }}>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="feed" style={{ color: 'var(--accent-info)' }} /> Live Event Feed
@@ -58,7 +58,7 @@ export default function Dashboard() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
-        <InteractiveCard>
+        <InteractiveCard className="fly-in-bottom-left" style={{ animationDelay: '260ms' }}>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="ball" style={{ color: 'var(--accent-success)' }} /> Match Status
@@ -85,7 +85,7 @@ export default function Dashboard() {
           </div>
         </InteractiveCard>
 
-        <InteractiveCard>
+        <InteractiveCard className="fly-in-bottom-right" style={{ animationDelay: '340ms' }}>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icon name="weather" style={{ color: 'var(--accent-warning)' }} /> Weather

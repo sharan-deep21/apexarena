@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useRealTimeData } from '../hooks/useRealTimeData';
 import Icon from '../components/common/Icon';
 import InteractiveCard from '../components/common/InteractiveCard';
+import GooeyValue from '../components/common/GooeyValue';
 
 export default function Transport() {
   const data = useRealTimeData();
@@ -71,7 +72,7 @@ export default function Transport() {
               <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                 <span className="transport-stat-label" style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{l.name}</span>
                 <span className="transport-stat-value" style={{ fontSize: 'var(--text-sm)', color: l.available < 200 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>
-                  {l.available} / {l.total} Left
+                  <GooeyValue value={l.available} /> / {l.total} Left
                 </span>
               </div>
               <div className="progress-bar">
@@ -99,7 +100,9 @@ export default function Transport() {
                 <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>To: {r.destination}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span className="transport-stat-value" style={{ fontWeight: 'bold', fontSize: 'var(--text-sm)' }}>{r.nextArrival}</span>
+                <span className="transport-stat-value" style={{ fontWeight: 'bold', fontSize: 'var(--text-sm)' }}>
+                  <GooeyValue value={r.nextArrival} />
+                </span>
                 <div style={{ fontSize: 'var(--text-xs)', color: r.status === 'On Time' ? 'var(--accent-success)' : 'var(--accent-danger)' }}>
                   {r.status}
                 </div>
@@ -118,15 +121,15 @@ export default function Transport() {
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
             <span className="transport-stat-label">Avg Pickup Wait</span>
-            <span className="transport-stat-value" style={{ fontWeight: 600 }}>{t.rideshare.avgWait}</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600 }}><GooeyValue value={t.rideshare.avgWait} /></span>
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
             <span className="transport-stat-label">Surge Multiplier</span>
-            <span className="transport-stat-value" style={{ fontWeight: 600, color: t.rideshare.surgeMultiplier > 1.5 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>{t.rideshare.surgeMultiplier}x</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600, color: t.rideshare.surgeMultiplier > 1.5 ? 'var(--accent-danger)' : 'var(--accent-success)' }}><GooeyValue value={t.rideshare.surgeMultiplier} />x</span>
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
             <span className="transport-stat-label">Active Drivers Nearby</span>
-            <span className="transport-stat-value" style={{ fontWeight: 600 }}>{t.rideshare.activeDrivers}</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600 }}><GooeyValue value={t.rideshare.activeDrivers} /></span>
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
             <span className="transport-stat-label">Designated Area</span>

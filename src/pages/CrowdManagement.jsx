@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRealTimeData } from '../hooks/useRealTimeData';
 import { useCrowdData } from '../hooks/useCrowdData';
 import { formatNumber, formatPercent, getCapacityLevel } from '../utils/formatters';
@@ -6,14 +7,29 @@ import GooeyValue from '../components/common/GooeyValue';
 import CrowdHeatmap from '../components/dashboard/CrowdHeatmap';
 import Icon from '../components/common/Icon';
 import InteractiveCard from '../components/common/InteractiveCard';
+import { getCrowdAnalysis } from '../services/geminiService';
 
 export default function CrowdManagement() {
   const data = useRealTimeData();
   const crowdAnalytics = useCrowdData(data?.crowdData);
+  const [aiResponse, setAiResponse] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   if (!data?.crowdData) return <div className="page"><div className="skeleton" style={{ height: 400 }} /></div>;
 
   const { crowdData, alerts } = data;
+
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true);
+    try {
+      const response = await getCrowdAnalysis(crowdData);
+      setAiResponse(response.text);
+    } catch {
+      setAiResponse("Failed to generate redirection guidelines. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   return (
     <div className="page">
@@ -51,7 +67,7 @@ export default function CrowdManagement() {
             </span>
             <span className="status-badge danger">
               <span className="status-badge-dot" />
-              {alerts?.length || 0}
+              <GooeyValue value={alerts?.length || 0} />
             </span>
           </div>
           <div className="card-body">
@@ -87,8 +103,12 @@ export default function CrowdManagement() {
             return (
               <InteractiveCard key={z.name} className={`zone-card ${level}`} style={{ padding: 'var(--space-4)' }}>
                 <div className="zone-card-name" style={{ fontWeight: 600 }}>{z.name}</div>
-                <div className="zone-card-capacity" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, margin: 'var(--space-1) 0' }}>{formatPercent(pct)}</div>
-                <div className="zone-card-label" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginBottom: 'var(--space-2)' }}>{formatNumber(z.current)} / {formatNumber(z.capacity)}</div>
+                <div className="zone-card-capacity" style={{ fontSize: 'var(--text-lg)', fontWeight: 700, margin: 'var(--space-1) 0' }}>
+                  <GooeyValue value={formatPercent(pct)} />
+                </div>
+                <div className="zone-card-label" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginBottom: 'var(--space-2)' }}>
+                  <GooeyValue value={formatNumber(z.current)} /> / {formatNumber(z.capacity)}
+                </div>
                 <div className="progress-bar">
                   <div className={`progress-bar-fill ${pct >= 90 ? 'red' : pct >= 75 ? 'yellow' : 'green'}`} style={{ width: `${Math.min(pct, 100)}%` }} />
                 </div>
@@ -102,24 +122,83 @@ export default function CrowdManagement() {
       </div>
 
       <InteractiveCard style={{ marginTop: 'var(--space-4)' }}>
-        <div className="card-header">
+        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Icon name="fifaAi" style={{ color: 'var(--accent-gold)' }} /> AI Crowd Insights
+            <Icon name="fifaAi" style={{ color: 'var(--accent-gold)' }} /> AI Decision Support: Crowd Redirection Flow
           </span>
           <span className="status-badge info">
-            <span className="status-badge-dot" />Gemini-Powered
+            <span className="status-badge-dot" />Gemini Live Advisory
           </span>
         </div>
         <div className="card-body">
-          <div style={{ padding: 'var(--space-4)', background: 'rgba(50, 98, 149, 0.08)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(50, 98, 149, 0.15)' }}>
-            <p style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
-              <strong>Current Analysis:</strong> Stadium is at {formatPercent(crowdAnalytics.avgDensity)} average capacity. 
-              {crowdAnalytics.criticalZones.length > 0 
-                ? ` Warning: ${crowdAnalytics.criticalZones.length} zone(s) approaching critical capacity. Recommend redirecting to lower-density sections.` 
-                : ' All zones within safe operating thresholds.'}
-              {crowdAnalytics.highZones.length > 0 && ` Note: ${crowdAnalytics.highZones.length} zone(s) at elevated levels — monitor closely during halftime.`}
-            </p>
-          </div>
+          {!aiResponse && !isAnalyzing && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-4)' }}>
+              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+                Deploy the operations advisor to analyze the current zone densities, activeWarnings, and generate custom crowd redirection routes.
+              </p>
+              <button 
+                className="btn-primary" 
+                onClick={handleAnalyze}
+                style={{
+                  background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-primary-dark))',
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: 'var(--radius-sm)',
+                  fontWeight: 600,
+                  fontSize: 'var(--text-sm)',
+                  boxShadow: 'var(--shadow-glow)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                RUN FLOW ANALYSIS
+              </button>
+            </div>
+          )}
+
+          {isAnalyzing && (
+            <div style={{ padding: 'var(--space-4)' }}>
+              <div className="skeleton" style={{ height: '16px', width: '80%', marginBottom: '12px' }} />
+              <div className="skeleton" style={{ height: '16px', width: '90%', marginBottom: '12px' }} />
+              <div className="skeleton" style={{ height: '16px', width: '60%' }} />
+            </div>
+          )}
+
+          {aiResponse && !isAnalyzing && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <div 
+                style={{ 
+                  padding: 'var(--space-4)', 
+                  background: 'rgba(50, 98, 149, 0.08)', 
+                  borderRadius: 'var(--radius-sm)', 
+                  border: '1px solid rgba(50, 98, 149, 0.15)',
+                  fontSize: 'var(--text-sm)',
+                  lineHeight: 1.7,
+                  color: 'var(--text-primary)',
+                  whiteSpace: 'pre-line'
+                }}
+              >
+                {aiResponse}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button 
+                  onClick={handleAnalyze}
+                  style={{
+                    color: 'var(--text-secondary)',
+                    fontSize: 'var(--text-xs)',
+                    fontWeight: 600,
+                    textDecoration: 'underline',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Refresh AI Recommendation
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </InteractiveCard>
     </div>

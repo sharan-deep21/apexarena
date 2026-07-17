@@ -5,29 +5,29 @@ html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
 
 :root {
   /* Dark Theme Variables (OLED Default) */
-  --bg-primary: #020617;
-  --bg-secondary: #0b0f19;
-  --bg-tertiary: #131b2e;
-  --bg-elevated: #1b253b;
-  --bg-hover: #1e2942;
+  --bg-primary: #050505;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #101010;
+  --bg-elevated: #151515;
+  --bg-hover: #1c1c1c;
   
-  --body-bg: radial-gradient(circle at 50% 20%, #0d152d 0%, #030712 60%, #010307 100%);
-  --glass-card-bg: rgba(11, 19, 43, 0.55);
-  --glass-card-border: rgba(255, 255, 255, 0.08);
-  --glass-card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --body-bg: radial-gradient(circle at 50% 20%, #151515 0%, #050505 70%, #000000 100%);
+  --glass-card-bg: rgba(10, 10, 10, 0.75);
+  --glass-card-border: rgba(255, 255, 255, 0.05);
+  --glass-card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   
-  --glass-sidebar-bg: rgba(4, 8, 20, 0.75);
-  --glass-sidebar-border: rgba(255, 255, 255, 0.06);
-  --glass-header-bg: rgba(4, 8, 20, 0.5);
-  --glass-header-border: rgba(255, 255, 255, 0.06);
+  --glass-sidebar-bg: rgba(5, 5, 5, 0.85);
+  --glass-sidebar-border: rgba(255, 255, 255, 0.04);
+  --glass-header-bg: rgba(5, 5, 5, 0.7);
+  --glass-header-border: rgba(255, 255, 255, 0.04);
   
-  --sidebar-link-active: #00f2fe;
-  --sidebar-link-active-bg: rgba(0, 242, 254, 0.08);
+  --sidebar-link-active: #ffffff;
+  --sidebar-link-active-bg: rgba(255, 255, 255, 0.06);
   
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --text-inverse: #020617;
+  --text-inverse: #050505;
   
   --accent-primary: #3b82f6;
   --accent-primary-light: #60a5fa;
@@ -44,12 +44,12 @@ html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
   --accent-info: #0ea5e9;
   --accent-info-light: #38bdf8;
   
-  --border-color: #1e293b;
-  --border-light: #0f172a;
+  --border-color: #1a1a1a;
+  --border-light: #111111;
   --border-focus: var(--accent-primary);
   
-  --glass-bg: rgba(11, 15, 25, 0.7);
-  --glass-bg-light: rgba(19, 27, 46, 0.5);
+  --glass-bg: rgba(10, 10, 10, 0.75);
+  --glass-bg-light: rgba(15, 15, 15, 0.5);
   --glass-border: rgba(255, 255, 255, 0.05);
   --glass-blur: blur(20px);
   
@@ -105,7 +105,7 @@ html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
   --header-height: 64px;
   --chat-width: 380px;
   
-  --bg-grid-color: rgba(59, 130, 246, 0.03);
+  --bg-grid-color: rgba(255, 255, 255, 0.015);
 }
 
 /* Light Theme Variables */
@@ -188,7 +188,7 @@ body::after {
   left: 30%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
   pointer-events: none;
   z-index: -2;
   animation: float 12s ease-in-out infinite alternate;

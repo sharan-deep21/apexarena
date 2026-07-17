@@ -4,6 +4,7 @@ import { EVACUATION_ROUTES } from '../data/stadiumLayout';
 import { getEmergencyAdvice } from '../services/geminiService';
 import Icon from '../components/common/Icon';
 import InteractiveCard from '../components/common/InteractiveCard';
+import GooeyValue from '../components/common/GooeyValue';
 
 const ACTIONS = [
   { iconName: 'emergency', label: 'Evacuate', desc: 'Full stadium evacuation', severity: 'critical', status: 'emergency-active' },
@@ -22,6 +23,9 @@ export default function Emergency() {
   const [customIncidents, setCustomIncidents] = useState([]);
   const [aiAdvice, setAiAdvice] = useState('');
   const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
+  const [selectedIncident, setSelectedIncident] = useState(null);
+  const [incidentAdvice, setIncidentAdvice] = useState('');
+  const [isLoadingIncidentAdvice, setIsLoadingIncidentAdvice] = useState(false);
 
   const handleProtocolClick = useCallback(async (action) => {
     if (action.label === 'All Clear') {
@@ -62,6 +66,24 @@ export default function Emergency() {
       setAiAdvice('Unable to contact emergency center. Please follow standard manual protocols.');
     } finally {
       setIsLoadingAdvice(false);
+    }
+  }, [data]);
+
+  const handleIncidentClick = useCallback(async (inc) => {
+    setSelectedIncident(inc);
+    setIsLoadingIncidentAdvice(true);
+    setIncidentAdvice('');
+    try {
+      const response = await getEmergencyAdvice(
+        inc.title,
+        data?.stats?.capacityPercent || 81,
+        inc.location
+      );
+      setIncidentAdvice(response.text);
+    } catch (e) {
+      setIncidentAdvice('Unable to generate containment advice. Please check manual security guidelines.');
+    } finally {
+      setIsLoadingIncidentAdvice(false);
     }
   }, [data]);
 
@@ -154,13 +176,27 @@ export default function Emergency() {
               <Icon name="log" style={{ color: 'var(--accent-primary-light)' }} /> Incident Log
             </span>
             <span className="status-badge info" style={{ padding: '2px 8px', fontSize: '10px' }}>
-              {allIncidents.length} Records
+              <GooeyValue value={allIncidents.length} /> Records
             </span>
           </div>
           <div className="card-body">
             <div className="incident-log" style={{ maxHeight: '300px', overflowY: 'auto' }}>
               {allIncidents.map((inc, i) => (
-                <div key={i} className="incident-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderBottom: '1px solid var(--border-color)' }}>
+                <div 
+                  key={i} 
+                  className="incident-item" 
+                  onClick={() => handleIncidentClick(inc)}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    padding: '12px', 
+                    borderBottom: '1px solid var(--border-color)',
+                    cursor: 'pointer',
+                    background: selectedIncident?.title === inc.title ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                    transition: 'background 0.25s'
+                  }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div className={`incident-severity ${inc.severity}`} style={{
                       width: '10px', height: '10px', borderRadius: '50%',
@@ -203,36 +239,68 @@ export default function Emergency() {
         </InteractiveCard>
       </div>
 
-      {/* AI Decision Support */}
-      <InteractiveCard style={{ marginTop: 'var(--space-4)' }}>
-        <div className="card-header">
-          <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Icon name="dashboard" style={{ color: 'var(--accent-info)' }} /> AI Emergency Decision Support
-          </span>
-          <span className="status-badge info"><span className="status-badge-dot" />Gemini-Powered</span>
-        </div>
-        <div className="card-body">
-          <div style={{ padding: 'var(--space-4)', background: 'rgba(59, 130, 246, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
-            {isLoadingAdvice ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
-                <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
-                <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
-                <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
-                AI is compiling response strategies based on real-time crowd telemetry...
-              </div>
-            ) : aiAdvice ? (
-              <div style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
-                <strong>AI Decision Strategy:</strong><br />
-                {aiAdvice}
-              </div>
-            ) : (
-              <p style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-muted)' }}>
-                Select an emergency protocol above to request live, context-aware dispatch and evacuation strategies from the Gemini AI model.
-              </p>
-            )}
+      {/* AI Decision Support Layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
+        <InteractiveCard>
+          <div className="card-header">
+            <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Icon name="dashboard" style={{ color: 'var(--accent-info)' }} /> AI Emergency Decision Support
+            </span>
+            <span className="status-badge info"><span className="status-badge-dot" />Protocol Guide</span>
           </div>
-        </div>
-      </InteractiveCard>
+          <div className="card-body">
+            <div style={{ padding: 'var(--space-4)', background: 'rgba(59, 130, 246, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
+              {isLoadingAdvice ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                  <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
+                  <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
+                  <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
+                  AI is compiling response strategies...
+                </div>
+              ) : aiAdvice ? (
+                <div style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+                  <strong>AI Decision Strategy:</strong><br />
+                  {aiAdvice}
+                </div>
+              ) : (
+                <p style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-muted)' }}>
+                  Select an emergency protocol above to request live, context-aware dispatch and evacuation strategies from the Gemini AI model.
+                </p>
+              )}
+            </div>
+          </div>
+        </InteractiveCard>
+
+        <InteractiveCard>
+          <div className="card-header">
+            <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Icon name="fifaAi" style={{ color: 'var(--accent-danger)' }} /> AI Live Incident Advisory
+            </span>
+            <span className="status-badge danger"><span className="status-badge-dot" />Incident Containment</span>
+          </div>
+          <div className="card-body">
+            <div style={{ padding: 'var(--space-4)', background: 'rgba(239, 68, 68, 0.05)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(239, 68, 68, 0.1)' }}>
+              {isLoadingIncidentAdvice ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontSize: 'var(--text-sm)' }}>
+                  <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
+                  <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
+                  <span className="chat-typing-dot" style={{ width: 6, height: 6 }} />
+                  Analyzing containment guidelines...
+                </div>
+              ) : selectedIncident ? (
+                <div style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+                  <strong>Containment for {selectedIncident.title} ({selectedIncident.location}):</strong><br />
+                  <span style={{ whiteSpace: 'pre-wrap' }}>{incidentAdvice}</span>
+                </div>
+              ) : (
+                <p style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: 'var(--text-muted)' }}>
+                  Select an active incident from the Incident Log on the left to generate target step-by-step instructions.
+                </p>
+              )}
+            </div>
+          </div>
+        </InteractiveCard>
+      </div>
     </div>
   );
 }

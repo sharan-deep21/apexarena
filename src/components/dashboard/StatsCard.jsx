@@ -2,14 +2,14 @@ import GooeyValue from '../common/GooeyValue';
 import Icon from '../common/Icon';
 import InteractiveCard from '../common/InteractiveCard';
 
-export default function StatsCard({ label, value, iconName, trend, colorClass = 'blue', delay = 0 }) {
+export default function StatsCard({ label, value, iconName, trend, colorClass = 'blue', delay = 0, className = '' }) {
   const trendClass = trend?.direction === 'up' ? 'up' : trend?.direction === 'down' ? 'down' : 'neutral';
   const trendArrow = trend?.direction === 'up' ? '↑' : trend?.direction === 'down' ? '↓' : '→';
   const sparkPoints = Array.from({ length: 8 }, (_, i) => `${(i / 7) * 100},${50 + (Math.sin(i + Date.now() / 1000) * 20)}`).join(' ');
 
   return (
     <InteractiveCard 
-      className="stats-card" 
+      className={`stats-card ${className}`} 
       style={{ animationDelay: `${delay}ms` }}
       tiltEnabled={true}
     >

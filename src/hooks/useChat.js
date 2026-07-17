@@ -15,13 +15,13 @@ export function useChat() {
   ]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendUserMessage = useCallback(async (text) => {
+  const sendUserMessage = useCallback(async (text, telemetry = {}) => {
     if (!text.trim() || isLoading) return;
     const userMsg = { id: Date.now(), text, sender: 'user', timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
     try {
-      const response = await sendChatMessage(text);
+      const response = await sendChatMessage(text, telemetry);
       setMessages(prev => [...prev, { id: Date.now() + 1, text: response.text, sender: 'bot', timestamp: new Date() }]);
     } catch {
       setMessages(prev => [...prev, { id: Date.now() + 1, text: "I'm sorry, I encountered an error. Please try again.", sender: 'bot', timestamp: new Date() }]);

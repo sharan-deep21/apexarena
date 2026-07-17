@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
+import { useRealTimeData } from '../../hooks/useRealTimeData';
 import ChatMessage from './ChatMessage';
 import QuickActions from './QuickActions';
 import Icon from '../common/Icon';
@@ -11,6 +12,7 @@ export default function ChatBot() {
   const { messages, isLoading, sendMessage } = useChat();
   const endRef = useRef(null);
   const location = useLocation();
+  const telemetry = useRealTimeData();
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -18,7 +20,7 @@ export default function ChatBot() {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    sendMessage(input);
+    sendMessage(input, telemetry);
     setInput('');
   };
 
@@ -53,7 +55,7 @@ export default function ChatBot() {
           )}
           <div ref={endRef} />
         </div>
-        <QuickActions onAction={sendMessage} />
+        <QuickActions onAction={(text) => sendMessage(text, telemetry)} />
         <div className="chat-input-area">
           <input className="chat-input" type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey} placeholder="Ask me anything about the stadium..." aria-label="Chat message input" />
           <button className="chat-send-btn" onClick={handleSend} disabled={!input.trim() || isLoading} aria-label="Send message">↑</button>

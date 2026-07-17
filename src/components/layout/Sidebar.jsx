@@ -51,7 +51,7 @@ function SidebarItem({ item, collapsed, alertCount, mouseY }) {
 
     if (distance < maxDistance) {
       const factor = 1 - distance / maxDistance; // 0 to 1
-      const maxScaleFactor = collapsed ? 0.35 : 0.08; // 1.35x when collapsed, 1.08x when expanded
+      const maxScaleFactor = collapsed ? 0.45 : 0.22; // 1.45x when collapsed, 1.22x when expanded
       const targetScale = 1 + factor * maxScaleFactor;
       setScale(targetScale);
     } else {
@@ -130,16 +130,16 @@ export default function Sidebar({ collapsed, onToggle, alertCount = 0 }) {
 
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`} aria-label="Main navigation">
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <ellipse cx="12" cy="12" rx="10" ry="6" />
-            <ellipse cx="12" cy="12" rx="6" ry="3.5" />
-            <line x1="12" y1="6" x2="12" y2="18" />
-            <line x1="2" y1="12" x2="22" y2="12" />
-          </svg>
-        </div>
-        {!collapsed && <div className="sidebar-logo-text">Apex<span>Arena</span></div>}
+      <div className="sidebar-logo" style={{ justifyContent: collapsed ? 'center' : 'flex-start' }}>
+        {!collapsed ? (
+          <div className="sidebar-logo-text" style={{ fontSize: '18px', fontWeight: 800, paddingLeft: '4px' }}>
+            Apex<span>Arena</span>
+          </div>
+        ) : (
+          <div className="sidebar-logo-text" style={{ fontSize: '18px', fontWeight: 800 }}>
+            A<span>A</span>
+          </div>
+        )}
       </div>
 
       <nav 
