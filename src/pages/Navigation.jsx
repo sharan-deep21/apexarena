@@ -288,7 +288,7 @@ export default function Navigation() {
               <div className="nav-search-box" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)' }}>
                 <Icon name="search" width="14" height="14" style={{ color: 'var(--text-muted)' }} />
                 <input type="text" placeholder="Search locations..." value={search} onChange={e => setSearch(e.target.value)} aria-label="Search locations" style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: 'var(--text-sm)', outline: 'none' }} />
-                {search && <button onClick={() => setSearch('')} style={{ color: 'var(--text-muted)', cursor: 'pointer', background: 'none', border: 'none', fontSize: '14px' }}>✕</button>}
+                {search && <button onClick={() => setSearch('')} aria-label="Clear search" style={{ color: 'var(--text-muted)', cursor: 'pointer', background: 'none', border: 'none', fontSize: '14px' }}>✕</button>}
               </div>
             </div>
 
@@ -353,7 +353,7 @@ export default function Navigation() {
                     <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500 }}>{p.name}</div>
                     <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'capitalize' }}>{p.type} • Concourse Level</div>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); setSelectedPoi(p); getDirections(p); }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', color: 'var(--text-muted)', padding: '4px' }} title="Get directions">
+                  <button onClick={(e) => { e.stopPropagation(); setSelectedPoi(p); getDirections(p); }} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', color: 'var(--text-muted)', padding: '4px' }} title="Get directions" aria-label={`Get directions to ${p.name}`}>
                     <Icon name="navigation" width="16" height="16" />
                   </button>
                 </div>
@@ -372,7 +372,7 @@ export default function Navigation() {
                   </span> 
                   {selectedPoi.name}
                 </span>
-                <button onClick={() => { setSelectedPoi(null); setDirections(null); setShowRoutePanel(false); }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
+                <button aria-label="Close details panel" onClick={() => { setSelectedPoi(null); setDirections(null); setShowRoutePanel(false); }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✕</button>
               </div>
               <div className="card-body">
                 {isLoadingDir ? (

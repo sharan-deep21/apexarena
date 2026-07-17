@@ -44,9 +44,14 @@ export function ChatBubbleAvatar({ src, fallback = "AI", isBot = false, classNam
   );
 }
 
-export function ChatBubbleAction({ icon, onClick, className = "" }) {
+export function ChatBubbleAction({ icon, onClick, className = "", title, 'aria-label': ariaLabel }) {
   return (
-    <button className={`chat-bubble-action-btn ${className}`} onClick={onClick}>
+    <button 
+      className={`chat-bubble-action-btn ${className}`} 
+      onClick={onClick}
+      title={title}
+      aria-label={ariaLabel || title}
+    >
       {icon}
     </button>
   );

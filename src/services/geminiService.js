@@ -3,9 +3,8 @@
  * Core GenAI service for chat, crowd analysis, emergency advice, translation, and sustainability.
  */
 
-import { getCurrentVenue } from '../data/venues';
-
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+import { getCurrentVenue } from '../data/venues.js';
+import { GoogleGenAI } from '@google/genai';
 
 function getSystemPrompt() {
   const venue = getCurrentVenue();
@@ -351,7 +350,8 @@ function getDemoResponse(message, context = {}) {
 
 /** Get API key from localStorage or environment */
 export function getApiKey() {
-  return localStorage.getItem('stadiumai_gemini_key') || import.meta.env.VITE_GEMINI_API_KEY || '';
+  const envKey = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env.VITE_GEMINI_API_KEY : '';
+  return localStorage.getItem('stadiumai_gemini_key') || envKey || '';
 }
 
 /** Store API key in localStorage */
@@ -362,6 +362,11 @@ export function setApiKey(key) {
 /** Check if running in demo mode (no API key) */
 function isDemoMode() {
   return !getApiKey();
+}
+
+/** Helper to instantiate the official GenAI Client */
+function getGenAIClient() {
+  return new GoogleGenAI({ apiKey: getApiKey() });
 }
 
 /** Send a chat message to Gemini API */
@@ -375,26 +380,24 @@ export async function sendChatMessage(message, context = {}, language = 'en') {
     const systemPrompt = getSystemPrompt() + telemetryContext;
     const langInstruction = language !== 'en' ? `\n\nIMPORTANT: Respond in the language with code "${language}".` : '';
     const venue = getCurrentVenue();
-    const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [
-          { role: 'user', parts: [{ text: systemPrompt + langInstruction }] },
-          { role: 'model', parts: [{ text: `Understood! I am ApexArena, the smart stadium Operations AI. I see the live metrics and am ready to support fans and command operators at ${venue.name}.` }] },
-          { role: 'user', parts: [{ text: message }] },
-        ],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
-      }),
+    
+    const ai = getGenAIClient();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: [
+        { role: 'user', parts: [{ text: systemPrompt + langInstruction }] },
+        { role: 'model', parts: [{ text: `Understood! I am ApexArena, the smart stadium Operations AI. I see the live metrics and am ready to support fans and command operators at ${venue.name}.` }] },
+        { role: 'user', parts: [{ text: message }] },
+      ],
+      config: {
+        temperature: 0.7,
+        maxOutputTokens: 1024,
+      }
     });
-    if (!res.ok) {
-      console.warn('Gemini API HTTP error:', res.status, '— falling back to demo mode');
-      return { text: getDemoResponse(message, context), success: false };
-    }
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    const text = response.text();
     if (!text) {
-      console.warn('Gemini API returned no candidates — falling back to demo mode');
+      console.warn('Gemini API returned no text — falling back to demo mode');
       return { text: getDemoResponse(message, context), success: false };
     }
     return { text, success: true };
@@ -412,14 +415,16 @@ export async function getCrowdAnalysis(crowdData) {
   }
   try {
     const prompt = `Analyze this crowd data for ${venue.name} and provide brief operational recommendations:\n${JSON.stringify(crowdData)}`;
-    const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.5, maxOutputTokens: 512 } }),
+    const ai = getGenAIClient();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: {
+        temperature: 0.5,
+        maxOutputTokens: 512,
+      }
     });
-    if (!res.ok) return { text: `${venue.name} at 81% capacity. North Upper approaching critical levels — recommend redirecting to West Lower and Field Level sections.`, success: false };
-    const data = await res.json();
-    return { text: data.candidates?.[0]?.content?.parts?.[0]?.text || 'Analysis unavailable.', success: true };
+    return { text: response.text() || 'Analysis unavailable.', success: true };
   } catch { return { text: 'Analysis unavailable.', success: false }; }
 }
 
@@ -431,14 +436,16 @@ export async function getEmergencyAdvice(incidentType, crowdDensity, location) {
   }
   try {
     const prompt = `Emergency at ${venue.name}: ${incidentType} at ${location}. Crowd density: ${crowdDensity}%. Provide concise emergency response recommendations.`;
-    const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 512 } }),
+    const ai = getGenAIClient();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: {
+        temperature: 0.3,
+        maxOutputTokens: 512,
+      }
     });
-    if (!res.ok) return { text: `For ${incidentType} at ${location}: Deploy nearest response team. Current density is ${crowdDensity}%. Nearest medical: Section 112. ETA: 3 min.`, success: false };
-    const data = await res.json();
-    return { text: data.candidates?.[0]?.content?.parts?.[0]?.text || 'Follow standard protocol.', success: true };
+    return { text: response.text() || 'Follow standard protocol.', success: true };
   } catch { return { text: 'Follow standard emergency protocol.', success: false }; }
 }
 
@@ -447,14 +454,16 @@ export async function translateText(text, targetLanguage) {
   if (isDemoMode()) return { text, success: false };
   try {
     const prompt = `Translate the following text to ${targetLanguage}. Return only the translation:\n${text}`;
-    const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2, maxOutputTokens: 512 } }),
+    const ai = getGenAIClient();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: {
+        temperature: 0.2,
+        maxOutputTokens: 512,
+      }
     });
-    if (!res.ok) return { text, success: false };
-    const data = await res.json();
-    return { text: data.candidates?.[0]?.content?.parts?.[0]?.text || text, success: true };
+    return { text: response.text() || text, success: true };
   } catch { return { text, success: false }; }
 }
 
@@ -466,13 +475,15 @@ export async function getSustainabilityTips(metrics) {
   }
   try {
     const prompt = `Given these sustainability metrics for ${venue.name}: ${JSON.stringify(metrics)}. Provide 3 brief actionable eco-recommendations.`;
-    const res = await fetch(`${GEMINI_API_URL}?key=${getApiKey()}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.5, maxOutputTokens: 512 } }),
+    const ai = getGenAIClient();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: {
+        temperature: 0.5,
+        maxOutputTokens: 512,
+      }
     });
-    if (!res.ok) return { text: 'Reduce lighting in low-traffic sections by 20%. Redirect fans to water refill stations.', success: false };
-    const data = await res.json();
-    return { text: data.candidates?.[0]?.content?.parts?.[0]?.text || 'No tips available.', success: true };
+    return { text: response.text() || 'No tips available.', success: true };
   } catch { return { text: 'Sustainability analysis unavailable.', success: false }; }
 }
