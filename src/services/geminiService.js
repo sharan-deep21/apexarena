@@ -92,7 +92,7 @@ const KEYWORD_MAP = [
   { keys: ['park', 'car', 'drive', 'uber', 'lyft', 'taxi', 'cab', 'rideshare', 'ride share', 'bus', 'train', 'transit', 'subway', 'shuttle', 'transport', 'traffic', 'commute', 'lot a', 'lot b', 'lot c', 'lot d'], response: 'parking' },
   { keys: ['emergency', 'help', 'danger', 'fire', 'evacuate', 'evacuation', 'security', 'police', 'fight', 'threat', 'suspicious', 'alarm', 'unsafe', 'report', 'issue', 'problem', 'complaint'], response: 'emergency' },
   { keys: ['score', 'match', 'game', 'goal', 'result', 'who is winning', 'who scored', 'brazil', 'germany', 'half time', 'halftime', 'red card', 'yellow card', 'penalty', 'kickoff', 'kick off', 'lineup'], response: 'match' },
-  { keys: ['weather', 'rain', 'temperature', 'hot', 'cold', 'sun', 'wind', 'forecast', 'umbrella', 'sunscreen', 'jacket'], response: 'weather' },
+  { keys: ['weather', 'climate', 'rain', 'temperature', 'temp', 'hot', 'cold', 'sun', 'wind', 'forecast', 'umbrella', 'sunscreen', 'jacket', 'conditions', 'forecasts'], response: 'weather' },
   { keys: ['wifi', 'wi-fi', 'internet', 'charge', 'charging', 'battery', 'phone', 'plug', 'outlet', 'usb', 'signal', 'connection', 'data'], response: 'wifi' },
   { keys: ['kid', 'child', 'children', 'baby', 'family', 'infant', 'toddler', 'stroller', 'pram', 'play area', 'face paint', 'ear protection'], response: 'kids' },
   { keys: ['shop', 'store', 'merch', 'merchandise', 'jersey', 'shirt', 'souvenir', 'buy', 'purchase', 'gift', 'scarf', 'hat', 'cap', 'ball', 'flag'], response: 'merch' },
@@ -183,7 +183,7 @@ function getDemoResponse(message, context = {}) {
   }
 
   // 4. Dynamic Check for Weather Condition
-  if (lower.includes('weather') || lower.includes('temp') || lower.includes('rain') || lower.includes('cloud') || lower.includes('wind')) {
+  if (lower.includes('weather') || lower.includes('climate') || lower.includes('temp') || lower.includes('rain') || lower.includes('cloud') || lower.includes('wind') || lower.includes('forecast') || lower.includes('sun')) {
     if (context.weather) {
       const w = context.weather;
       return `🌤️ **Current Weather Report:**\n\nTemperature is **${w.temp}°F** (${w.condition}).\n- 💧 Humidity: ${w.humidity}\n- 💨 Wind: ${w.wind}\n\nPerfect match-day conditions. No delays anticipated!`;
@@ -201,17 +201,6 @@ function getDemoResponse(message, context = {}) {
     return `📍 **${venue.name}** is located in **${venue.city}, ${venue.country}**.`;
   }
 
-  // Check for greetings
-  if (/^(hi|hey|hello|yo|sup|howdy|greetings|good morning|good evening|good afternoon|what can you do|what do you do)\b/.test(lower.trim())) {
-    const greetings = GREETING_RESPONSES(venue.name);
-    return greetings[Math.floor(Math.random() * greetings.length)];
-  }
-
-  // Check for thank you
-  if (/\b(thank|thanks|thx|cheers|appreciate|great help|helpful)\b/.test(lower)) {
-    return `😊 You're welcome! Enjoy the match at ${venue.name}! If you need anything else during the game, just ask. Go enjoy the beautiful game! ⚽🎉`;
-  }
-
   // Keyword matching — check all keyword groups with word boundaries
   for (const group of KEYWORD_MAP) {
     for (const keyword of group.keys) {
@@ -222,6 +211,17 @@ function getDemoResponse(message, context = {}) {
         return baseResponse.replaceAll('MetLife Stadium', venue.name).replaceAll('MetLife', venue.name);
       }
     }
+  }
+
+  // Check for greetings (moved down so it doesn't hijack questions that start with 'hey' or 'hi')
+  if (/^(hi|hey|hello|yo|sup|howdy|greetings|good morning|good evening|good afternoon|what can you do|what do you do)\b/.test(lower.trim())) {
+    const greetings = GREETING_RESPONSES(venue.name);
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+
+  // Check for thank you (moved down so it doesn't hijack questions that mention thank you)
+  if (/\b(thank|thanks|thx|cheers|appreciate|great help|helpful)\b/.test(lower)) {
+    return `😊 You're welcome! Enjoy the match at ${venue.name}! If you need anything else during the game, just ask. Go enjoy the beautiful game! ⚽🎉`;
   }
 
   // Fallback: random greeting
