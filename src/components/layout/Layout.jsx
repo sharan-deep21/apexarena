@@ -24,8 +24,9 @@ export default function Layout() {
           </filter>
         </defs>
       </svg>
+      <a href="#main-content" className="skip-link" style={{ position: 'absolute', top: '-60px', left: '20px', background: 'var(--accent-primary)', color: 'white', padding: '8px 16px', borderRadius: '0 0 var(--radius-sm) var(--radius-sm)', zIndex: 99999, textDecoration: 'none', fontWeight: 600, transition: 'top 0.2s' }} onFocus={(e) => e.target.style.top = '0'} onBlur={(e) => e.target.style.top = '-60px'}>Skip to main content</a>
       <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} alertCount={3} />
-      <main className={`app-main ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <main id="main-content" className={`app-main ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} tabIndex="-1">
         <Header title={title} sidebarCollapsed={sidebarCollapsed} />
         <div className="app-content"><Outlet /></div>
       </main>

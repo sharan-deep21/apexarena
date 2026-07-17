@@ -339,12 +339,20 @@ export default function Navigation() {
               <div style={{ flex: 1, overflowY: 'auto', maxHeight: showRoutePanel ? 160 : 260 }}>
                 {filtered.length === 0 && <div style={{ textAlign: 'center', padding: 'var(--space-6)', color: 'var(--text-muted)' }}><div style={{ fontSize: '24px' }}>🔍</div><div style={{ fontSize: 'var(--text-sm)', marginTop: 'var(--space-2)' }}>No locations found</div></div>}
               {filtered.map(p => (
-                <div key={p.id} onClick={() => setSelectedPoi(p)} style={{
-                  display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-2) var(--space-3)',
-                  background: selectedPoi?.id === p.id ? 'rgba(50,98,149,0.15)' : 'transparent',
-                  borderRadius: 'var(--radius-sm)', cursor: 'pointer', transition: 'all 0.15s',
-                  borderLeft: selectedPoi?.id === p.id ? '3px solid var(--accent-primary)' : '3px solid transparent',
-                }}>
+                <div 
+                  key={p.id} 
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedPoi(p)} 
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedPoi(p); } }}
+                  aria-label={`Select point of interest: ${p.name}`}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-2) var(--space-3)',
+                    background: selectedPoi?.id === p.id ? 'rgba(50,98,149,0.15)' : 'transparent',
+                    borderRadius: 'var(--radius-sm)', cursor: 'pointer', transition: 'all 0.15s',
+                    borderLeft: selectedPoi?.id === p.id ? '3px solid var(--accent-primary)' : '3px solid transparent',
+                  }}
+                >
                   {/* Premium Vector Icon */}
                   <div style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${POI_COLORS[p.type] || '#3B82F6'}22`, color: POI_COLORS[p.type] || '#3B82F6' }}>
                     <Icon name={p.type} width="16" height="16" />

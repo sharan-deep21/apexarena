@@ -323,7 +323,7 @@ function getDemoResponse(message, context = {}) {
   // Keyword matching — check all keyword groups with word boundaries
   for (const group of KEYWORD_MAP) {
     for (const keyword of group.keys) {
-      const escaped = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const escaped = keyword.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
       const regex = new RegExp(`\\b${escaped}\\b`, 'i');
       if (regex.test(lower)) {
         const baseResponse = DEMO_RESPONSES[group.response];
@@ -369,6 +369,37 @@ function getGenAIClient() {
   return new GoogleGenAI({ apiKey: getApiKey() });
 }
 
+/** Dynamic helper to fetch Vercel serverless function or fallback to client SDK */
+async function callGemini(contents, config = {}) {
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents, config }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        return { text: data.text, success: true };
+      }
+    }
+  } catch (err) {
+    console.warn('Vercel serverless function not reachable, trying client fallback:', err);
+  }
+
+  const localKey = getApiKey();
+  if (localKey) {
+    const ai = getGenAIClient();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents,
+      config
+    });
+    return { text: response.text(), success: true };
+  }
+  throw new Error('No API key or serverless endpoint available.');
+}
+
 /** Send a chat message to Gemini API */
 export async function sendChatMessage(message, context = {}, language = 'en') {
   if (isDemoMode()) {
@@ -381,21 +412,19 @@ export async function sendChatMessage(message, context = {}, language = 'en') {
     const langInstruction = language !== 'en' ? `\n\nIMPORTANT: Respond in the language with code "${language}".` : '';
     const venue = getCurrentVenue();
     
-    const ai = getGenAIClient();
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: [
+    const response = await callGemini(
+      [
         { role: 'user', parts: [{ text: systemPrompt + langInstruction }] },
         { role: 'model', parts: [{ text: `Understood! I am ApexArena, the smart stadium Operations AI. I see the live metrics and am ready to support fans and command operators at ${venue.name}.` }] },
         { role: 'user', parts: [{ text: message }] },
       ],
-      config: {
+      {
         temperature: 0.7,
         maxOutputTokens: 1024,
       }
-    });
+    );
 
-    const text = response.text();
+    const text = response.text;
     if (!text) {
       console.warn('Gemini API returned no text — falling back to demo mode');
       return { text: getDemoResponse(message, context), success: false };
@@ -415,16 +444,11 @@ export async function getCrowdAnalysis(crowdData) {
   }
   try {
     const prompt = `Analyze this crowd data for ${venue.name} and provide brief operational recommendations:\n${JSON.stringify(crowdData)}`;
-    const ai = getGenAIClient();
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: prompt,
-      config: {
-        temperature: 0.5,
-        maxOutputTokens: 512,
-      }
+    const response = await callGemini(prompt, {
+      temperature: 0.5,
+      maxOutputTokens: 512,
     });
-    return { text: response.text() || 'Analysis unavailable.', success: true };
+    return { text: response.text || 'Analysis unavailable.', success: true };
   } catch { return { text: 'Analysis unavailable.', success: false }; }
 }
 
@@ -436,16 +460,11 @@ export async function getEmergencyAdvice(incidentType, crowdDensity, location) {
   }
   try {
     const prompt = `Emergency at ${venue.name}: ${incidentType} at ${location}. Crowd density: ${crowdDensity}%. Provide concise emergency response recommendations.`;
-    const ai = getGenAIClient();
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: prompt,
-      config: {
-        temperature: 0.3,
-        maxOutputTokens: 512,
-      }
+    const response = await callGemini(prompt, {
+      temperature: 0.3,
+      maxOutputTokens: 512,
     });
-    return { text: response.text() || 'Follow standard protocol.', success: true };
+    return { text: response.text || 'Follow standard protocol.', success: true };
   } catch { return { text: 'Follow standard emergency protocol.', success: false }; }
 }
 
@@ -454,16 +473,11 @@ export async function translateText(text, targetLanguage) {
   if (isDemoMode()) return { text, success: false };
   try {
     const prompt = `Translate the following text to ${targetLanguage}. Return only the translation:\n${text}`;
-    const ai = getGenAIClient();
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: prompt,
-      config: {
-        temperature: 0.2,
-        maxOutputTokens: 512,
-      }
+    const response = await callGemini(prompt, {
+      temperature: 0.2,
+      maxOutputTokens: 512,
     });
-    return { text: response.text() || text, success: true };
+    return { text: response.text || text, success: true };
   } catch { return { text, success: false }; }
 }
 
@@ -475,15 +489,10 @@ export async function getSustainabilityTips(metrics) {
   }
   try {
     const prompt = `Given these sustainability metrics for ${venue.name}: ${JSON.stringify(metrics)}. Provide 3 brief actionable eco-recommendations.`;
-    const ai = getGenAIClient();
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: prompt,
-      config: {
-        temperature: 0.5,
-        maxOutputTokens: 512,
-      }
+    const response = await callGemini(prompt, {
+      temperature: 0.5,
+      maxOutputTokens: 512,
     });
-    return { text: response.text() || 'No tips available.', success: true };
+    return { text: response.text || 'No tips available.', success: true };
   } catch { return { text: 'Sustainability analysis unavailable.', success: false }; }
 }

@@ -113,7 +113,10 @@ export default function Header({ title, sidebarCollapsed }) {
               {searchResults.map(poi => (
                 <div
                   key={poi.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => selectSearchResult(poi)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectSearchResult(poi); } }}
                   style={{
                     padding: '8px 12px', display: 'flex', gap: '8px', alignItems: 'center',
                     cursor: 'pointer', borderBottom: '1px solid var(--border-color)',
@@ -193,7 +196,11 @@ export default function Header({ title, sidebarCollapsed }) {
         <div className="header-lang-container" ref={langRef} style={{ position: 'relative' }}>
           <div
             className="header-lang-selector"
+            role="button"
+            tabIndex={0}
             onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLangDropdownOpen(!langDropdownOpen); } }}
+            aria-label="Select Language"
             style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: 'var(--radius-full)', background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', fontSize: 'var(--text-sm)' }}
           >
             <span>{currentLang.flag}</span>
@@ -210,7 +217,11 @@ export default function Header({ title, sidebarCollapsed }) {
               {LANGUAGES.map(lang => (
                 <div
                   key={lang.code}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleLanguageChange(lang.code)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleLanguageChange(lang.code); } }}
+                  aria-label={`Change language to ${lang.name}`}
                   style={{
                     padding: '8px 12px', display: 'flex', gap: '8px', alignItems: 'center',
                     cursor: 'pointer', borderBottom: '1px solid var(--border-color)',

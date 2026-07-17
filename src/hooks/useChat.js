@@ -17,7 +17,22 @@ export function useChat() {
 
   const sendUserMessage = useCallback(async (text, telemetry = {}) => {
     if (!text.trim() || isLoading) return;
-    const userMsg = { id: Date.now(), text, sender: 'user', timestamp: new Date() };
+
+    // Rate-limiting check: enforce a 1.5s delay between messages
+    const now = Date.now();
+    const lastUserMsg = [...messages].reverse().find(m => m.sender === 'user');
+    if (lastUserMsg && (now - lastUserMsg.timestamp.getTime() < 1500)) {
+      setMessages(prev => [...prev, { id: now, text: "⚠️ You are sending messages too quickly. Please wait a moment.", sender: 'bot', timestamp: new Date() }]);
+      return;
+    }
+
+    // Input length capping: reject messages longer than 1000 chars
+    if (text.length > 1000) {
+      setMessages(prev => [...prev, { id: now, text: "⚠️ Message is too long. Please keep it under 1000 characters.", sender: 'bot', timestamp: new Date() }]);
+      return;
+    }
+
+    const userMsg = { id: now, text, sender: 'user', timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setIsLoading(true);
     try {
@@ -28,7 +43,7 @@ export function useChat() {
     } finally {
       setIsLoading(false);
     }
-  }, [isLoading]);
+  }, [isLoading, messages]);
 
   const clearChat = useCallback(() => {
     setMessages([{ id: 1, text: "Chat cleared. How can I help you?", sender: 'bot', timestamp: new Date() }]);

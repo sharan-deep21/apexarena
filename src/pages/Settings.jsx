@@ -103,8 +103,13 @@ export default function Settings() {
                 <div key={k} className="settings-toggle" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border-color)' }}>
                   <span style={{ fontSize: 'var(--text-sm)' }}>{l}</span>
                   <div
+                    role="switch"
+                    aria-checked={notifications[k]}
+                    tabIndex={0}
                     className={`toggle-switch ${notifications[k] ? 'active' : ''}`}
                     onClick={() => setNotifications(p => ({ ...p, [k]: !p[k] }))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setNotifications(p => ({ ...p, [k]: !p[k] })); } }}
+                    aria-label={`Toggle ${l}`}
                   />
                 </div>
               ))}

@@ -22,16 +22,16 @@ export default function Dashboard() {
         <StatusBadge status="live" label="LIVE DATA" />
       </div>
       
-      <div className="stats-grid">
+      <section className="stats-grid" aria-label="Key Operational Stats">
         <StatsCard label="Total Attendance" value={stats.attendance} iconName="crowd" colorClass="blue" trend={{ value: '+2.1% vs yesterday', direction: 'up' }} delay={0} className="fly-in-top-left" />
         <StatsCard label="Stadium Capacity" value={stats.capacityPercent} iconName="dashboard" colorClass="green" trend={{ value: `${stats.capacityPercent}%`, direction: stats.capacityPercent > 80 ? 'up' : 'neutral' }} delay={80} className="fly-in-top" />
         <StatsCard label="Active Alerts" value={stats.activeAlerts} iconName="alertTriangle" colorClass="red" trend={{ value: stats.activeAlerts > 2 ? 'Needs attention' : 'Normal', direction: stats.activeAlerts > 2 ? 'up' : 'neutral' }} delay={160} className="fly-in-top" />
         <StatsCard label="Avg Wait Time" value={stats.avgWaitTime} iconName="settings" colorClass="amber" trend={{ value: '-12% from peak', direction: 'down' }} delay={240} className="fly-in-top" />
         <StatsCard label="Sustainability" value={stats.sustainabilityScore} iconName="leaf" colorClass="gold" trend={{ value: 'Above target', direction: 'up' }} delay={320} className="fly-in-top" />
         <StatsCard label="Transit Load" value={stats.transitLoad} iconName="bus" colorClass="info" trend={{ value: `${stats.transitLoad}% utilized`, direction: 'neutral' }} delay={400} className="fly-in-top-right" />
-      </div>
+      </section>
 
-      <div className="dashboard-grid">
+      <section className="dashboard-grid" aria-label="Stadium Heatmap and Feeds">
         <InteractiveCard className="fly-in-bottom-left" style={{ animationDelay: '100ms' }}>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -55,9 +55,9 @@ export default function Dashboard() {
             <LiveFeed events={liveFeed} />
           </div>
         </InteractiveCard>
-      </div>
+      </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
+      <section aria-label="Match and Weather Live Telemetry" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)', marginTop: 'var(--space-4)' }}>
         <InteractiveCard className="fly-in-bottom-left" style={{ animationDelay: '260ms' }}>
           <div className="card-header">
             <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -95,7 +95,7 @@ export default function Dashboard() {
             <WeatherWidget weather={weather} />
           </div>
         </InteractiveCard>
-      </div>
+      </section>
     </div>
   );
 }
