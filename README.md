@@ -2,6 +2,8 @@
 
 > FIFA World Cup 2026 • Challenge 4: Smart Stadiums & Tournament Operations
 
+**Live Website**: [https://apexarena-ops.vercel.app](https://apexarena-ops.vercel.app)
+
 ApexArena is a GenAI-enabled platform designed to optimize stadium operations and the overall tournament experience for fans, venue staff, and organizers during the FIFA World Cup 2026. The solution leverages the Google Gemini API to coordinate intelligent navigation, crowd flow analysis, active emergency dispatch logging, and eco-grid resource automation.
 
 ---
