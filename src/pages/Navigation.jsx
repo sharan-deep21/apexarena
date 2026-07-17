@@ -19,6 +19,8 @@ export default function Navigation() {
   const [showRoutePanel, setShowRoutePanel] = useState(false);
 
   const venueId = getCurrentVenueId();
+  const exits = POINTS_OF_INTEREST.filter(p => p.type === 'exit');
+  const [selectedGate, setSelectedGate] = useState(exits[0] || null);
 
   const filtered = POINTS_OF_INTEREST.filter(p => {
     const mf = activeFilter === 'All' || p.type.toLowerCase() === activeFilter.toLowerCase();
@@ -26,15 +28,34 @@ export default function Navigation() {
     return mf && ms;
   });
 
-  const getDirections = useCallback(async (poi) => {
+  const getPathD = (startGate, endPoi) => {
+    if (!startGate || !endPoi) return '';
+    const sx = startGate.x * 5;
+    const sy = startGate.y * 3.5;
+    const tx = endPoi.x * 5;
+    const ty = endPoi.y * 3.5;
+    const cx = 250, cy = 175;
+    let mx = (sx + tx) / 2;
+    let my = (sy + ty) / 2;
+    let vx = mx - cx;
+    let vy = my - cy;
+    let len = Math.sqrt(vx * vx + vy * vy);
+    if (len > 0) {
+      mx += (vx / len) * 55;
+      my += (vy / len) * 55;
+    }
+    return `M ${sx} ${sy} Q ${mx} ${my} ${tx} ${ty}`;
+  };
+
+  const getDirections = useCallback(async (poi, start = selectedGate) => {
     setIsLoadingDir(true);
     setDirections(null);
-    const from = fromSection || 'my current location';
+    const from = start?.name || 'Gate 1 (North Entrance)';
     const response = await sendChatMessage(`Give me step-by-step walking directions from ${from} to ${poi.name} (${poi.type}) inside the stadium. Be concise.`);
-    setDirections({ poi, from, text: response.text, estimatedTime: `${Math.floor(Math.random() * 4 + 2)} min walk`, distance: `${Math.floor(Math.random() * 300 + 100)} ft` });
+    setDirections({ poi, from, text: response.text, estimatedTime: `${Math.floor(Math.random() * 4 + 3)} min walk`, distance: `${Math.floor(Math.random() * 300 + 150)} ft` });
     setIsLoadingDir(false);
     setShowRoutePanel(true);
-  }, [fromSection]);
+  }, [selectedGate]);
 
   const renderStadiumLayout = (id) => {
     const fieldGrad = "url(#fieldGrad)";
@@ -195,6 +216,26 @@ export default function Navigation() {
             {/* Draw layout base */}
             {renderStadiumLayout(venueId)}
 
+            {/* Animated route path */}
+            {selectedGate && selectedPoi && (
+              <>
+                <path
+                  d={getPathD(selectedGate, selectedPoi)}
+                  fill="none"
+                  stroke="var(--accent-primary)"
+                  strokeWidth="6"
+                  opacity="0.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d={getPathD(selectedGate, selectedPoi)}
+                  className="animated-route-path"
+                />
+                <circle cx={selectedGate.x * 5} cy={selectedGate.y * 3.5} r="6" fill="var(--accent-success)" stroke="white" strokeWidth="1.5" />
+                <circle cx={selectedPoi.x * 5} cy={selectedPoi.y * 3.5} r="6" fill="var(--accent-danger)" stroke="white" strokeWidth="1.5" />
+              </>
+            )}
+
             {/* POI pins */}
             {filtered.map(p => {
               const isSelected = selectedPoi?.id === p.id;
@@ -268,10 +309,26 @@ export default function Navigation() {
 
             {/* From section input */}
             <div>
-              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>AI Route Planner</div>
+              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Select Entrance Gate</div>
               <div style={{ padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700 }}>FROM:</span>
-                <input type="text" placeholder="Your section (e.g. Section 115)" value={fromSection} onChange={e => setFromSection(e.target.value)} style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: 'var(--text-xs)', outline: 'none' }} />
+                <select 
+                  value={selectedGate?.id || ''} 
+                  onChange={e => {
+                    const g = POINTS_OF_INTEREST.find(p => p.id === e.target.value);
+                    setSelectedGate(g);
+                    if (selectedPoi) {
+                      getDirections(selectedPoi, g);
+                    }
+                  }} 
+                  style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-primary)', fontSize: 'var(--text-xs)', outline: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  {exits.map(g => (
+                    <option key={g.id} value={g.id} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)' }}>
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

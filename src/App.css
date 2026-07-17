@@ -1244,3 +1244,20 @@ body {
   }
 }
 
+/* Animated GPS Wayfinding Route Path */
+.animated-route-path {
+  fill: none;
+  stroke: var(--accent-primary-light);
+  stroke-width: 3.5px;
+  stroke-linecap: round;
+  stroke-dasharray: 8 6;
+  animation: routeDashFlow 1.2s linear infinite;
+  filter: drop-shadow(0 0 4px var(--accent-primary-light));
+}
+
+@keyframes routeDashFlow {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+

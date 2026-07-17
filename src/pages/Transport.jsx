@@ -19,6 +19,11 @@ export default function Transport() {
   const [rideStatus, setRideStatus] = useState(null);
   const [isBookingRide, setIsBookingRide] = useState(false);
 
+  // Dispatcher controls state
+  const [shuttleDispatchedCount, setShuttleDispatchedCount] = useState(0);
+  const [railBoostActive, setRailBoostActive] = useState(false);
+  const [attendantsDeployed, setAttendantsDeployed] = useState(false);
+
   const handleBookParking = useCallback((e) => {
     e.preventDefault();
     if (!licensePlate.trim()) return;
@@ -49,6 +54,35 @@ export default function Transport() {
 
   if (!t) return <div className="page"><div className="skeleton" style={{ height: 400 }} /></div>;
 
+  // Recalculated state overrides
+  const parkingLots = t.parking.map(lot => {
+    if (attendantsDeployed && (lot.name === 'Lot A' || lot.name === 'Lot D')) {
+      return {
+        ...lot,
+        available: Math.min(lot.total, lot.available + 180)
+      };
+    }
+    return lot;
+  });
+
+  const transitStatus = t.transit.map(route => {
+    if (railBoostActive && (route.name.includes('Rail') || route.name.includes('Train') || route.name.includes('Bus'))) {
+      const nextNum = Math.max(1, Math.round(parseFloat(route.nextArrival) * 0.4));
+      return {
+        ...route,
+        nextArrival: `${nextNum} min`,
+        status: 'High Freq'
+      };
+    }
+    return route;
+  });
+
+  const rawWait = Math.max(2.1, parseFloat(t.rideshare.avgWait) - (shuttleDispatchedCount * 2.2));
+  const avgWait = `${rawWait.toFixed(1)} min`;
+  const rawSurge = Math.max(1.0, parseFloat(t.rideshare.surgeMultiplier) - (shuttleDispatchedCount * 0.25));
+  const surgeMultiplier = `${rawSurge.toFixed(2)}`;
+  const activeDrivers = t.rideshare.activeDrivers + (shuttleDispatchedCount * 12);
+
   return (
     <div className="page">
       <div className="page-header">
@@ -67,7 +101,7 @@ export default function Transport() {
             </span>
             <span className="transport-card-title" style={{ fontWeight: 600, fontSize: 'var(--text-md)' }}>Parking Lot Capacity</span>
           </div>
-          {t.parking.map(l => (
+          {parkingLots.map(l => (
             <div key={l.name} style={{ marginBottom: '12px' }}>
               <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                 <span className="transport-stat-label" style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{l.name}</span>
@@ -93,7 +127,7 @@ export default function Transport() {
             </span>
             <span className="transport-card-title" style={{ fontWeight: 600, fontSize: 'var(--text-md)' }}>Transit Status</span>
           </div>
-          {t.transit.map(r => (
+          {transitStatus.map(r => (
             <div key={r.name} className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-color)' }}>
               <div>
                 <span className="transport-stat-label" style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{r.name}</span>
@@ -101,9 +135,9 @@ export default function Transport() {
               </div>
               <div style={{ textAlign: 'right' }}>
                 <span className="transport-stat-value" style={{ fontWeight: 'bold', fontSize: 'var(--text-sm)' }}>
-                  <GooeyValue value={r.nextArrival} />
+                  <GooeyValue value={parseFloat(r.nextArrival) || 5} /> min
                 </span>
-                <div style={{ fontSize: 'var(--text-xs)', color: r.status === 'On Time' ? 'var(--accent-success)' : 'var(--accent-danger)' }}>
+                <div style={{ fontSize: 'var(--text-xs)', color: r.status === 'On Time' || r.status === 'High Freq' ? 'var(--accent-success)' : 'var(--accent-danger)' }}>
                   {r.status}
                 </div>
               </div>
@@ -121,15 +155,21 @@ export default function Transport() {
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
             <span className="transport-stat-label">Avg Pickup Wait</span>
-            <span className="transport-stat-value" style={{ fontWeight: 600 }}><GooeyValue value={t.rideshare.avgWait} /></span>
+            <span className="transport-stat-value" style={{ fontWeight: 600 }}>
+              <GooeyValue value={parseFloat(avgWait)} /> min
+            </span>
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
             <span className="transport-stat-label">Surge Multiplier</span>
-            <span className="transport-stat-value" style={{ fontWeight: 600, color: t.rideshare.surgeMultiplier > 1.5 ? 'var(--accent-danger)' : 'var(--accent-success)' }}><GooeyValue value={t.rideshare.surgeMultiplier} />x</span>
+            <span className="transport-stat-value" style={{ fontWeight: 600, color: parseFloat(surgeMultiplier) > 1.5 ? 'var(--accent-danger)' : 'var(--accent-success)' }}>
+              <GooeyValue value={parseFloat(surgeMultiplier)} />x
+            </span>
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
             <span className="transport-stat-label">Active Drivers Nearby</span>
-            <span className="transport-stat-value" style={{ fontWeight: 600 }}><GooeyValue value={t.rideshare.activeDrivers} /></span>
+            <span className="transport-stat-value" style={{ fontWeight: 600 }}>
+              <GooeyValue value={activeDrivers} />
+            </span>
           </div>
           <div className="transport-stat" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
             <span className="transport-stat-label">Designated Area</span>
@@ -293,6 +333,79 @@ export default function Transport() {
                 <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '2px' }}>{r.time} transit delay</div>
               </div>
             ))}
+          </div>
+        </div>
+      </InteractiveCard>
+
+      {/* Traffic Dispatcher Control Board */}
+      <InteractiveCard style={{ marginTop: 'var(--space-4)' }}>
+        <div className="card-header">
+          <span className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Icon name="dashboard" style={{ color: 'var(--accent-warning)' }} /> AI-Assisted Traffic Dispatch Control Panel
+          </span>
+          <span className="status-badge live"><span className="status-badge-dot" />Terminal Controller</span>
+        </div>
+        <div className="card-body">
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
+            Command dispatcher to resolve concourse bottlenecks, dispatch backup shuttles, or override parking limits based on live crowd telemetry.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)' }}>
+            <div style={{ padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Rideshare Dispatch</div>
+              <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+                Current wait: <strong>{avgWait}</strong>
+              </div>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => setShuttleDispatchedCount(prev => prev + 1)}
+                style={{ padding: '6px 12px', fontSize: 'var(--text-xs)' }}
+              >
+                Dispatch Aux Shuttles (+12)
+              </button>
+              {shuttleDispatchedCount > 0 && (
+                <div style={{ fontSize: '10px', color: 'var(--accent-success)' }}>
+                  ✅ Dispatched {shuttleDispatchedCount * 12} aux electric golf-carts.
+                </div>
+              )}
+            </div>
+
+            <div style={{ padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Rail & Bus Dispatch</div>
+              <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+                Status: <strong>{railBoostActive ? 'High Frequency Active' : 'Normal Frequency'}</strong>
+              </div>
+              <button 
+                className={`btn ${railBoostActive ? '' : 'btn-primary'}`}
+                onClick={() => setRailBoostActive(prev => !prev)}
+                style={{ padding: '6px 12px', fontSize: 'var(--text-xs)' }}
+              >
+                {railBoostActive ? 'Disable Rail Frequency Boost' : 'Boost Rail Frequency'}
+              </button>
+              {railBoostActive && (
+                <div style={{ fontSize: '10px', color: 'var(--accent-success)' }}>
+                  ⚡ Frequencies set to 4-minute headways.
+                </div>
+              )}
+            </div>
+
+            <div style={{ padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Parking Lot Controls</div>
+              <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
+                Status: <strong>{attendantsDeployed ? 'Manual Clearing Active' : 'Automatic Toll Gates'}</strong>
+              </div>
+              <button 
+                className={`btn ${attendantsDeployed ? '' : 'btn-primary'}`}
+                onClick={() => setAttendantsDeployed(prev => !prev)}
+                style={{ padding: '6px 12px', fontSize: 'var(--text-xs)' }}
+              >
+                {attendantsDeployed ? 'Recall Attendants' : 'Deploy Parking Attendants'}
+              </button>
+              {attendantsDeployed && (
+                <div style={{ fontSize: '10px', color: 'var(--accent-success)' }}>
+                  👮 Officers stationed at Exit Gates A & D.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </InteractiveCard>
