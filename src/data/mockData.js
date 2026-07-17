@@ -1,4 +1,4 @@
-import { getCurrentVenueId } from './venues';
+import { getCurrentVenueId } from './venues.js';
 
 export const MATCH_SCHEDULE = [
   { id: 1, homeTeam: 'Brazil', awayTeam: 'Germany', homeFlag: '🇧🇷', awayFlag: '🇩🇪', date: '2026-07-10', time: '20:00', venue: 'MetLife Stadium', group: 'Semi-Final' },

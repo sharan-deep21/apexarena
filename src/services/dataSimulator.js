@@ -2,8 +2,8 @@
  * StadiumAI — Real-Time Data Simulation Engine
  * Generates realistic, fluctuating stadium operation data for demonstration.
  */
-import { STADIUM_ZONES } from '../data/stadiumLayout';
-import { INITIAL_ALERTS, LIVE_MATCH } from '../data/mockData';
+import { STADIUM_ZONES } from '../data/stadiumLayout.js';
+import { INITIAL_ALERTS, LIVE_MATCH } from '../data/mockData.js';
 
 const FEED_MESSAGES = [
   { type: 'info', message: 'Gate 2 ticket scan rate: 42 per minute' },

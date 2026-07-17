@@ -1,4 +1,4 @@
-import { getCurrentVenueId } from './venues';
+import { getCurrentVenueId } from './venues.js';
 
 export const STADIUM_ZONES = [
   { id: 'nu', name: 'North Upper', capacity: 7500, type: 'general' },
