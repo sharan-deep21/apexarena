@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import GooeyValue from '../common/GooeyValue';
 import Icon from '../common/Icon';
 import InteractiveCard from '../common/InteractiveCard';
@@ -5,7 +6,19 @@ import InteractiveCard from '../common/InteractiveCard';
 export default function StatsCard({ label, value, iconName, trend, colorClass = 'blue', delay = 0, className = '' }) {
   const trendClass = trend?.direction === 'up' ? 'up' : trend?.direction === 'down' ? 'down' : 'neutral';
   const trendArrow = trend?.direction === 'up' ? '↑' : trend?.direction === 'down' ? '↓' : '→';
-  const sparkPoints = Array.from({ length: 8 }, (_, i) => `${(i / 7) * 100},${50 + (Math.sin(i + Date.now() / 1000) * 20)}`).join(' ');
+  
+  const sparkPoints = useMemo(() => {
+    let hash = 0;
+    for (let j = 0; j < label.length; j++) {
+      hash = label.charCodeAt(j) + ((hash << 5) - hash);
+    }
+    return Array.from({ length: 8 }, (_, i) => {
+      const x = (i / 7) * 100;
+      const pseudoRandom = Math.abs(Math.sin(hash + i));
+      const y = 30 + (pseudoRandom * 40);
+      return `${x},${y}`;
+    }).join(' ');
+  }, [label]);
 
   return (
     <InteractiveCard 

@@ -33,6 +33,6 @@ test('i18n - fetch UI translations', () => {
   assert.strictEqual(esTrans.dashboard, 'Panel');
   
   // Fallback to English for unsupported languages
-  const defaultTrans = getUITranslations('ja');
+  const defaultTrans = getUITranslations('it');
   assert.strictEqual(defaultTrans.dashboard, 'Dashboard');
 });

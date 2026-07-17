@@ -145,7 +145,11 @@ export default function Emergency() {
         {ACTIONS.map(a => (
           <InteractiveCard
             key={a.label}
+            role="button"
+            tabIndex={0}
             onClick={() => handleProtocolClick(a)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleProtocolClick(a); } }}
+            aria-label={`Activate protocol: ${a.label}`}
             style={{
               borderColor: activeProtocol?.label === a.label ? 'var(--accent-danger)' : 'var(--border-color)',
               background: activeProtocol?.label === a.label ? 'rgba(239, 68, 68, 0.15)' : 'var(--glass-card-bg)',
@@ -185,7 +189,11 @@ export default function Emergency() {
                 <div 
                   key={i} 
                   className="incident-item" 
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleIncidentClick(inc)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleIncidentClick(inc); } }}
+                  aria-label={`Select incident log: ${inc.title}`}
                   style={{ 
                     display: 'flex', 
                     alignItems: 'center', 

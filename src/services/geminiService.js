@@ -496,3 +496,19 @@ export async function getSustainabilityTips(metrics) {
     return { text: response.text || 'No tips available.', success: true };
   } catch { return { text: 'Sustainability analysis unavailable.', success: false }; }
 }
+
+/** Get traffic/dispatch recommendations from Gemini */
+export async function getTrafficAdvice(transitData) {
+  const venue = getCurrentVenue();
+  if (isDemoMode()) {
+    return { text: `🚀 **AI Dispatch Advisory**: Rideshare demand is currently elevated. Dispatching auxiliary golf-carts will reduce average pickup wait times. Keep rail boost active to absorb exiting fans.`, success: true };
+  }
+  try {
+    const prompt = `Traffic telemetry for ${venue.name}:\n${JSON.stringify(transitData)}\n\nProvide 2 concise, highly actionable dispatcher recommendations for the stadium operators. Use markdown bolding for key terms.`;
+    const response = await callGemini(prompt, {
+      temperature: 0.5,
+      maxOutputTokens: 512,
+    });
+    return { text: response.text || 'Traffic operations normal.', success: true };
+  } catch { return { text: 'Traffic operations recommendations normal.', success: false }; }
+}

@@ -1,8 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRealTimeData } from '../hooks/useRealTimeData';
 import Icon from '../components/common/Icon';
 import InteractiveCard from '../components/common/InteractiveCard';
 import GooeyValue from '../components/common/GooeyValue';
+import { getTrafficAdvice } from '../services/geminiService';
+import { renderMarkdown } from '../components/chat/ChatMessage';
 
 export default function Transport() {
   const data = useRealTimeData();
@@ -23,6 +25,38 @@ export default function Transport() {
   const [shuttleDispatchedCount, setShuttleDispatchedCount] = useState(0);
   const [railBoostActive, setRailBoostActive] = useState(false);
   const [attendantsDeployed, setAttendantsDeployed] = useState(false);
+
+  // AI recommendations state
+  const [aiRecommendation, setAiRecommendation] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const fetchTrafficAdvice = async () => {
+      setIsAiLoading(true);
+      try {
+        const res = await getTrafficAdvice({
+          parkingLots: t?.parking,
+          transitStatus: t?.transit,
+          rideshare: t?.rideshare,
+          shuttleDispatchedCount,
+          railBoostActive,
+          attendantsDeployed
+        });
+        if (active) {
+          setAiRecommendation(res.text);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (active) setIsAiLoading(false);
+      }
+    };
+    if (t) {
+      fetchTrafficAdvice();
+    }
+    return () => { active = false; };
+  }, [shuttleDispatchedCount, railBoostActive, attendantsDeployed, t]);
 
   const handleBookParking = useCallback((e) => {
     e.preventDefault();
@@ -351,6 +385,28 @@ export default function Transport() {
           <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-4)' }}>
             Command dispatcher to resolve concourse bottlenecks, dispatch backup shuttles, or override parking limits based on live crowd telemetry.
           </p>
+
+          <div style={{
+            background: 'rgba(59, 130, 246, 0.05)',
+            border: '1px dashed rgba(59, 130, 246, 0.3)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '12px var(--space-4)',
+            marginBottom: 'var(--space-4)',
+            display: 'flex',
+            gap: '12px',
+            alignItems: 'flex-start'
+          }}>
+            <div style={{ fontSize: '18px', marginTop: '2px' }}>🤖</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--accent-primary-light)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                Gemini Co-Pilot Dispatch Recommendation
+              </div>
+              <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                {isAiLoading ? 'Analyzing live traffic flow and transit telemetry...' : renderMarkdown(aiRecommendation)}
+              </div>
+            </div>
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-4)' }}>
             <div style={{ padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Rideshare Dispatch</div>
