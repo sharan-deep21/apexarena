@@ -313,6 +313,7 @@ export default function Navigation() {
               <div style={{ padding: 'var(--space-3)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 700 }}>FROM:</span>
                 <select 
+                  aria-label="Select Entrance Gate"
                   value={selectedGate?.id || ''} 
                   onChange={e => {
                     const g = POINTS_OF_INTEREST.find(p => p.id === e.target.value);

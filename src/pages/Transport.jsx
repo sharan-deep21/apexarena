@@ -191,8 +191,9 @@ export default function Transport() {
               <form onSubmit={handleBookParking} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
                   <div>
-                    <label style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Select Lot</label>
+                    <label htmlFor="booking-lot-select" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Select Lot</label>
                     <select 
+                      id="booking-lot-select"
                       className="settings-select" 
                       value={selectedLot} 
                       onChange={e => setSelectedLot(e.target.value)}
@@ -205,8 +206,9 @@ export default function Transport() {
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>License Plate</label>
+                    <label htmlFor="license-plate-input" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>License Plate</label>
                     <input 
+                      id="license-plate-input"
                       type="text" 
                       placeholder="e.g. ABC-123" 
                       value={licensePlate} 
@@ -261,8 +263,8 @@ export default function Transport() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
                   <div>
-                    <label style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Pickup Location</label>
-                    <select className="settings-select" value={pickupGate} onChange={e => setPickupGate(e.target.value)}>
+                    <label htmlFor="shuttle-pickup-select" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Pickup Location</label>
+                    <select id="shuttle-pickup-select" className="settings-select" value={pickupGate} onChange={e => setPickupGate(e.target.value)}>
                       <option value="Gate 1">Gate 1 Concourse</option>
                       <option value="Gate 2">Gate 2 Concourse</option>
                       <option value="Gate 3">Gate 3 Concourse</option>
@@ -270,8 +272,8 @@ export default function Transport() {
                     </select>
                   </div>
                   <div>
-                    <label style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Destination</label>
-                    <select className="settings-select" value={destPoint} onChange={e => setDestPoint(e.target.value)}>
+                    <label htmlFor="shuttle-dest-select" style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>Destination</label>
+                    <select id="shuttle-dest-select" className="settings-select" value={destPoint} onChange={e => setDestPoint(e.target.value)}>
                       <option value="Meadowlands Rail Station">Meadowlands Rail</option>
                       <option value="Lot G Rideshare Zone">Lot G Rideshare</option>
                       <option value="Lot B Parking">Lot B Parking</option>

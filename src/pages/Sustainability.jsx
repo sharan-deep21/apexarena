@@ -180,6 +180,7 @@ export default function Sustainability() {
                 value={solarDimmer} 
                 onChange={e => setSolarDimmer(parseInt(e.target.value))} 
                 style={{ width: '100%', accentColor: 'var(--accent-success)' }} 
+                aria-label="Solar micro-grid input"
               />
               <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
                 Scales clean power offset limits and carbon offset calculations.
@@ -198,6 +199,7 @@ export default function Sustainability() {
                 value={hvacSetpoint} 
                 onChange={e => setHvacSetpoint(parseInt(e.target.value))} 
                 style={{ width: '100%', accentColor: 'var(--accent-warning)' }} 
+                aria-label="HVAC temperature setpoint"
               />
               <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
                 Higher setpoints drastically drop load consumption.
@@ -216,6 +218,7 @@ export default function Sustainability() {
                 value={lightingLevel} 
                 onChange={e => setLightingLevel(parseInt(e.target.value))} 
                 style={{ width: '100%', accentColor: 'var(--accent-primary-light)' }} 
+                aria-label="Concourse lighting dimmer"
               />
               <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>
                 Dimming stadium fixtures saves electricity during peaks.

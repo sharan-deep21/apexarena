@@ -77,8 +77,8 @@ export default function Settings() {
                 <Icon name="settings" style={{ color: 'var(--accent-primary-light)' }} /> General Settings
               </div>
               <div className="settings-field">
-                <label className="settings-label">Active Venue</label>
-                <select className="settings-select" value={venue} onChange={e => setVenue(e.target.value)}>
+                <label htmlFor="settings-venue-select" className="settings-label">Active Venue</label>
+                <select id="settings-venue-select" className="settings-select" value={venue} onChange={e => setVenue(e.target.value)}>
                   {VENUES.map(v => (
                     <option key={v.id} value={v.id}>
                       {v.emoji} {v.name} • {v.city} ({v.country})
@@ -117,7 +117,8 @@ export default function Settings() {
                 <Icon name="sustainability" style={{ color: 'var(--accent-success)' }} /> Language Preference
               </div>
               <div className="settings-field">
-                <select className="settings-select" value={language} onChange={e => setLanguage(e.target.value)}>
+                <label htmlFor="settings-language-select" className="settings-label">Language Preference</label>
+                <select id="settings-language-select" className="settings-select" value={language} onChange={e => setLanguage(e.target.value)}>
                   {LANGUAGES.map(l => (
                     <option key={l.code} value={l.code}>
                       {l.flag} {l.name} ({l.nativeName})
