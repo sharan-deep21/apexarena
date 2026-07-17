@@ -1,43 +1,52 @@
-# 🏟️ StadiumAI — GenAI-Powered Smart Stadium Operations
+# 🏟️ ApexArena — GenAI-Powered Smart Stadium Operations
 
 > **FIFA World Cup 2026 • Challenge 4: Smart Stadiums & Tournament Operations**
 
-StadiumAI is a GenAI-enabled platform that enhances stadium operations and the fan experience during the FIFA World Cup 2026. It leverages **Google Gemini AI** for intelligent navigation, real-time crowd management, multilingual assistance, emergency response, sustainability monitoring, and transportation coordination.
+ApexArena is a GenAI-enabled platform designed to optimize stadium operations and the overall tournament experience for fans, venue staff, and organizers during the FIFA World Cup 2026. It leverages the **Google Gemini API** for intelligent navigation wayfinding, real-time crowd flow analysis, active emergency dispatch logs, and eco-grid resource automation.
 
 ---
 
-## 🎯 Problem Statement
+## 🎯 Chosen Vertical
 
-Large-scale sporting events like the FIFA World Cup present complex challenges: managing 80,000+ fans in real time, coordinating emergency response, ensuring accessibility, reducing environmental impact, and providing multilingual support for a global audience. Traditional systems lack the intelligence to adapt dynamically.
+**Persona: Fans & Venue Organizers**
 
-## 💡 Solution
+Managing a massive tournament venue hosting 80,000+ fans presents unique friction points for both spectators and staff:
+* **For Fans**: Navigating complex gate entries, finding accessible restrooms/medical stations, communicating in native languages, and routing around congestions.
+* **For Organizers & Staff**: Monitoring zone crowd densities, responding to concourse safety incidents, coordinating public transit backlogs, and maintaining energy grid efficiency.
 
-StadiumAI is a **real-time operations dashboard** powered by Generative AI that provides:
+ApexArena resolves these challenges in a unified, premium hub. It bridges the gap between spectator self-service (multilingual wayfinding) and operational command (transit dispatch, safety advisories, and eco-controls) to ensure smooth match-day execution.
 
-- 🤖 **AI Chat Assistant** — Natural language help for fans (wayfinding, food, accessibility, emergencies) via Google Gemini API
-- 📊 **Live Crowd Management** — Real-time zone density heatmaps with AI-driven crowd analysis and redistribution recommendations
-- 🗺️ **Smart Navigation** — Interactive stadium SVG map with searchable POIs (food, restrooms, medical, exits, accessibility)
-- 🚌 **Transportation Hub** — Parking availability, public transit schedules, rideshare coordination, traffic conditions
-- 🚨 **Emergency Response** — Protocol activation, incident logging, evacuation routes, AI decision support
-- 🌱 **Sustainability Dashboard** — Carbon tracking, recycling rates, water efficiency, energy consumption with AI eco-recommendations
-- 🌐 **Multilingual Support** — 10 languages with real-time AI translation (English, Spanish, French, Arabic, Portuguese, German, Japanese, Korean, Chinese, Hindi)
-- ⚙️ **Settings** — Venue selection, API key configuration, notification preferences
+---
+
+## 💡 Approach & Logic
+
+### 1. Unified Real-Time Operations Telemetry
+Instead of separate database logs, ApexArena implements a custom **Data Simulator (`dataSimulator.js`)** that ticks every 3 seconds. It dynamically generates fluctuating attendance metrics, zone densities, public transit arrival countdowns, rideshare wait times, and active warning flags.
+
+### 2. Context-Aware Gemini Prompt Pipeline (`geminiService.js`)
+Every user chat query is enriched via a telemetry snapshot formatter. This automatically appends the live status of the stadium (including weather, current score, active alerts, and congestions) directly to the model prompt.
+* *Example*: If a fan asks *"hows the climate"* or *"is there a warning"*, the system does not need a database search—the Gemini model reasons directly over the injected real-time telemetry context to output a natural answer.
+
+### 3. Outward Arc Wayfinding Logic
+Standard maps draw straight route lines crossing directly over the pitch (which is physically impossible to walk). ApexArena implements a quadratic bezier route algorithm that calculates the mid-point between the selected gate and POI, and bows it outward away from the pitch center `(250, 175)` to curve gracefully along the concourses.
+
+### 4. Interactive Feedback Loops & State Overrides
+The Transport and Sustainability pages implement state-based controller overrides. When an operator slides the solar efficiency dial or clicks "Dispatch Shuttles", the input values temporarily override the simulator feeds. The numerical values immediately gooey-melt and morph into optimized statistics using custom SVG gooey-threshold matrix filters.
 
 ---
 
 ## 🧠 Generative AI Integration
 
-StadiumAI uses the **Google Gemini 2.0 Flash** model throughout the platform:
+ApexArena leverages **Google Gemini 2.0 Flash** for core cognitive features:
 
-| Feature | AI Capability |
-|---------|--------------|
-| Chat Assistant | Context-aware natural language understanding with deep stadium knowledge |
-| Crowd Analysis | Zone density evaluation with redistribution recommendations |
-| Emergency Support | Real-time incident assessment and protocol recommendations |
-| Translation | Dynamic multilingual text translation |
-| Sustainability | Environmental impact analysis and actionable eco-tips |
+| Feature | AI Capability | Trigger Context |
+|---------|--------------|-----------------|
+| **Concierge Chat** | Natural language queries | MetLife layout knowledge, live telemetry, and language autodetection |
+| **Crowd Flow Analysis** | Real-time redistribution | Evaluates zone occupancy percentages to suggest alternative exit routings |
+| **Incident Advisory** | Containment protocols | Generates dispatcher check-lists for selected concourse safety alerts |
+| **Eco-Recommendations** | Environmental advice | Suggests HVAC and solar grid tuning based on live energy loads |
 
-**Demo Mode**: The app works fully without an API key using realistic pre-built AI responses, making it instantly demonstrable.
+**Demo Mode**: The application is fully functional without an API key using realistic pre-built AI response mapping, making it instantly reviewable and testable.
 
 ---
 
@@ -215,6 +224,12 @@ Fully responsive layout from desktop to mobile with collapsible sidebar, adaptiv
 | **Testing** | Production build verification, error boundary handling |
 | **Accessibility** | ARIA labels, semantic HTML, keyboard support, reduced-motion support |
 
+## 📝 Assumptions
+
+1. **Fictional Concourse Geometries**: While the 11 stadium options correspond to real-world FIFA World Cup 2026 host venues, the internal con-course maps, point-of-interest coordinates, and evacuation routing parameters use simplified relative percentage schemes to ensure rapid browser rendering.
+2. **Client-Side Simulation**: Stadium status metrics, transit arrival counters, and matches proceed on localized React intervals, removing the dependency on external databases or live webhooks while keeping server overhead at zero.
+3. **Demo Pipeline Reliability**: The GenAI model falls back to a deterministic semantic keyword matcher when `import.meta.env.VITE_GEMINI_API_KEY` is not present, simulating realistic Gemini-Flash behaviors for instant, offline-capable review.
+
 ---
 
 ## 📄 License
@@ -225,5 +240,5 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 <p align="center">
   Built with ❤️ for FIFA World Cup 2026<br>
-  <strong>StadiumAI</strong> — Intelligent Operations for the Beautiful Game
+  <strong>ApexArena</strong> — Intelligent Operations for the Beautiful Game
 </p>
