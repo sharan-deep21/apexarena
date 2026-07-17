@@ -30,3 +30,6 @@ dist-ssr
 .vercel
 .env*
 .agents
+test-results/
+playwright-report/
+

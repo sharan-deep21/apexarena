@@ -361,7 +361,9 @@ export function setApiKey(key) {
 
 /** Check if running in demo mode (no API key) */
 function isDemoMode() {
-  return !getApiKey();
+  if (getApiKey()) return false;
+  if (typeof import.meta !== 'undefined' && import.meta.env?.PROD) return false;
+  return true;
 }
 
 /** Helper to instantiate the official GenAI Client */

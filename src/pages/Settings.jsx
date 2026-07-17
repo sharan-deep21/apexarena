@@ -60,8 +60,13 @@ export default function Settings() {
           {tabs.map(tab => (
             <div
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              tabIndex={0}
               className={`settings-nav-item ${activeTab === tab.id ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTab(tab.id); } }}
+              aria-label={`Switch to tab: ${tab.label}`}
               style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
               <Icon name={tab.iconName} width="16" height="16" />

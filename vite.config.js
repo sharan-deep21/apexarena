@@ -10,5 +10,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('d3') || id.includes('ogl')) return 'vendor-viz';
+            if (id.includes('@google')) return 'vendor-ai';
+            return 'vendor-core';
+          }
+        }
+      }
+    }
   },
 });
